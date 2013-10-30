@@ -1,0 +1,31 @@
+<!-- Launch OpenNI driver and process the data -->
+<launch>
+
+######### launch Openni driver #########################################
+  
+  
+  <include file="$(find ccny_openni_launch)/launch/openni.launch"/>
+
+#### launch Visual odometry ############################################
+
+  <include file="$(find  NIAC)/launch/visual_odometry.launch"/>
+
+
+#### launch xsens_driver ###############################################
+
+  
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+	</node>
+
+#### launch NIAC ###############################################
+
+  
+	<node pkg="NIAC" type="niac_node" name="niac" output="screen" >
+  <param name="alpha" value="0.6"/> #0.9, 0.5. 0.1
+  <param name="beta"  value="0.35"/>  #0.5 0.1
+  <param name="gamma" value="0.1"/>
+	</node>
+
+</launch>
+

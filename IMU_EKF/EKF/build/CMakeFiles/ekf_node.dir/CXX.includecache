@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_node.cpp
+EKF/EKF.h
+/home/rvalenti/ros/ccny-ros-pkg/EKF/src/EKF/EKF.h
+

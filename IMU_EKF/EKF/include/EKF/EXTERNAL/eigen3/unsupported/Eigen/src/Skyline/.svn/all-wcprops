@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/CMakeLists.txt
+END
+SkylineInplaceLU.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineInplaceLU.h
+END
+SkylineUtil.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineUtil.h
+END
+SkylineMatrixBase.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineMatrixBase.h
+END
+SkylineProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineProduct.h
+END
+SkylineMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineMatrix.h
+END
+SkylineStorage.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/Skyline/SkylineStorage.h
+END

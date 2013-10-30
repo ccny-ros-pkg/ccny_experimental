@@ -1,0 +1,31 @@
+<launch>
+
+#### Lunch Phidgets_driver ###########################################################
+
+  <node pkg="nodelet" type="nodelet" name="PhidgetsImuNodelet" 
+    args="load phidgets_imu/PhidgetsImuNodelet imu_manager" 
+    output="screen">
+
+   # supported data rates: 4 8 16 24 32 40 ... 1000 (in ms)
+    <param name="period" value="4"/>
+    
+  </node>
+
+#### launch EKF ###############################################
+
+  
+	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+  <param name="sigma_gx"     value="1.2184696791468346e-07"/>  
+  <param name="sigma_gy"     value="1.2184696791468346e-07"/>  
+  <param name="sigma_gz"     value="1.2184696791468346e-07"/> 
+  <param name="sigma_ax"     value="8.66124974095918e-06"/>
+  <param name="sigma_ay"     value="8.66124974095918e-06"/> 
+  <param name="sigma_az"     value="8.66124974095918e-06"/>
+  </node>
+
+#### Nodelet manager ######################################################
+
+  <node pkg="nodelet" type="nodelet" name="imu_manager"
+    args="manager" output="screen" />
+
+</launch>

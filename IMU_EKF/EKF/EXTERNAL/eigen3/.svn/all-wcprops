@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3
+END
+CTestConfig.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/CTestConfig.cmake
+END
+signature_of_eigen3_matrix_library
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/signature_of_eigen3_matrix_library
+END
+COPYING.GPL
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/COPYING.GPL
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/CMakeLists.txt
+END
+eigen3.pc.in
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/eigen3.pc.in
+END
+CTestCustom.cmake.in
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/CTestCustom.cmake.in
+END
+COPYING.LGPL
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/COPYING.LGPL
+END
+INSTALL
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/INSTALL
+END

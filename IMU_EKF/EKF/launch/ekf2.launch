@@ -1,0 +1,28 @@
+<launch>
+
+#### launch xsens_driver ###############################################
+
+  
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+    <remap from="imu/data" to="imu/data_raw"/>
+	</node> 
+
+#### launch EKF ###############################################
+
+  
+	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+  <param name="sigma_gx"     value="1.2184696791468346e-07"/>  
+  <param name="sigma_gy"     value="1.2184696791468346e-07"/>  
+  <param name="sigma_gz"     value="1.2184696791468346e-07"/> 
+  <param name="sigma_ax"     value="8.66124974095918e-06"/>
+  <param name="sigma_ay"     value="8.66124974095918e-06"/> 
+  <param name="sigma_az"     value="8.66124974095918e-06"/>
+  </node>
+
+#### Nodelet manager ######################################################
+
+  <node pkg="nodelet" type="nodelet" name="imu_manager"
+    args="manager" output="screen" />
+
+</launch>

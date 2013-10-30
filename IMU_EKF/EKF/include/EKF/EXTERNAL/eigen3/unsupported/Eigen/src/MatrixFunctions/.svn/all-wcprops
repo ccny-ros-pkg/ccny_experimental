@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions/CMakeLists.txt
+END
+MatrixFunctionAtomic.h
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions/MatrixFunctionAtomic.h
+END
+MatrixFunction.h
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions/MatrixFunction.h
+END
+MatrixExponential.h
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions/MatrixExponential.h
+END
+StemFunction.h
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/Eigen/src/MatrixFunctions/StemFunction.h
+END

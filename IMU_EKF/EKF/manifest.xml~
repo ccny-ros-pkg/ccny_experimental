@@ -1,0 +1,17 @@
+<package>
+  <description brief="EKF">
+
+     EKF
+
+  </description>
+  <author>rvalenti</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/EKF</url>
+  
+<export>
+    <nodelet plugin="${prefix}/ekf_nodelet.xml" />
+  </export>
+</package>
+
+

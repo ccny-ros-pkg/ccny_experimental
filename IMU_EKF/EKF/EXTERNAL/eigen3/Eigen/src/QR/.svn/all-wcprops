@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/QR
+END
+ColPivHouseholderQR.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/QR/ColPivHouseholderQR.h
+END
+HouseholderQR.h
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/QR/HouseholderQR.h
+END
+FullPivHouseholderQR.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/QR/FullPivHouseholderQR.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/QR/CMakeLists.txt
+END

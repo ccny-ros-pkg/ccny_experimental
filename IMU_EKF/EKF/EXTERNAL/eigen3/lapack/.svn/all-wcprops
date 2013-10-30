@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/lapack
+END
+eigenvalues.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/lapack/eigenvalues.cpp
+END
+complex_single.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/lapack/complex_single.cpp
+END
+lapack_common.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/lapack/lapack_common.h
+END
+double.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/lapack/double.cpp
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/lapack/CMakeLists.txt
+END
+lu.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/lapack/lu.cpp
+END
+cholesky.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/lapack/cholesky.cpp
+END
+complex_double.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/lapack/complex_double.cpp
+END
+single.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/lapack/single.cpp
+END

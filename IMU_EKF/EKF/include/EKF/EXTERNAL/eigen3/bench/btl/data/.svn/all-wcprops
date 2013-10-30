@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/CMakeLists.txt
+END
+gnuplot_common_settings.hh
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/gnuplot_common_settings.hh
+END
+mean.cxx
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/mean.cxx
+END
+mk_new_gnuplot.sh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/mk_new_gnuplot.sh
+END
+mk_mean_script.sh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/mk_mean_script.sh
+END
+go_mean
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/go_mean
+END
+perlib_plot_settings.txt
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/perlib_plot_settings.txt
+END
+regularize.cxx
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/regularize.cxx
+END
+smooth.cxx
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/smooth.cxx
+END
+smooth_all.sh
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/smooth_all.sh
+END
+action_settings.txt
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/action_settings.txt
+END
+mk_gnuplot_script.sh
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/bench/btl/data/mk_gnuplot_script.sh
+END
