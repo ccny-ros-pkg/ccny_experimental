@@ -956,9 +956,9 @@ pluginlib/class_list_macros.h
 EKF/ekf.h
 ../include/EKF/EKF/ekf.h
 
-/home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_nodelet.cpp
+/home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf_nodelet.cpp
 EKF/ekf_nodelet.h
-/home/rvalenti/ros/ccny-ros-pkg/EKF/src/EKF/ekf_nodelet.h
+/home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/EKF/ekf_nodelet.h
 
 /opt/ros/fuerte/include/XmlRpcDecl.h
 ros/macros.h

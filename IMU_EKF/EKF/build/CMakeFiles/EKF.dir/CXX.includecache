@@ -948,9 +948,9 @@ EKF/EXTERNAL/eigen3/Eigen/Eigen
 EKF/EXTERNAL/eigen3/Eigen/LU
 -
 
-/home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf.cpp
+/home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf.cpp
 EKF/ekf.h
-/home/rvalenti/ros/ccny-ros-pkg/EKF/src/EKF/ekf.h
+/home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/EKF/ekf.h
 EKF/EXTERNAL/eigen3/Eigen/Eigen
 -
 EKF/EXTERNAL/eigen3/Eigen/LU
