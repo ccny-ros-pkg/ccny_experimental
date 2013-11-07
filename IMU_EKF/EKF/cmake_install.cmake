@@ -1,4 +1,4 @@
-# Install script for directory: /home/rvalenti/ros/ccny-ros-pkg/EKF
+# Install script for directory: /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ ENDIF(CMAKE_INSTALL_COMPONENT)
 
 FILE(WRITE "/home/rvalenti/ros/ccny-ros-pkg/EKF/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/home/rvalenti/ros/ccny-ros-pkg/EKF/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)

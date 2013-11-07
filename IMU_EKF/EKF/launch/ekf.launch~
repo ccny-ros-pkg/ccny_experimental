@@ -15,15 +15,25 @@
 
   
 	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
-  <param name="sigma_gx"     value="0.003"/>  
-  <param name="sigma_gy"     value="0.003"/>  
-  <param name="sigma_gz"     value="0.003"/> 
-  <param name="sigma_ax"     value="0.01"/>
-  <param name="sigma_ay"     value="0.01"/> 
-  <param name="sigma_az"     value="0.01"/>
-  <param name="sigma_bx"     value="0.001"/>
-  <param name="sigma_by"     value="0.001"/> 
-  <param name="sigma_bz"     value="0.001"/>
+ 
+  <param name="sigma_g"     value="0.00003"/>  
+  
+  <param name="sigma_a"     value="0.001"/>
+  
+  <param name="sigma_bx"     value="0.0020250"/>
+  <param name="sigma_by"     value="0.002510"/> 
+  <param name="sigma_bz"     value="0.002002510"/>
+  </node>
+
+#### IMU Madqwick Orientation Filter#######################################
+
+  <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
+    args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
+    output="screen">
+
+    <param name="use_mag" value="false"/>
+    <param name="gain" value="0.1"/>
+    <remap from="imu/data" to="imu/data_madgwick"/>
   </node>
 
 #### Nodelet manager ######################################################

@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rvalenti/ros/ccny-ros-pkg/EKF
+CMAKE_SOURCE_DIR = /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rvalenti/ros/ccny-ros-pkg/EKF/build
+CMAKE_BINARY_DIR = /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/ekf_node.dir/depend.make
@@ -75,17 +75,17 @@ CMakeFiles/ekf_node.dir/src/ekf_node.o: /opt/ros/fuerte/stacks/nodelet_core/node
 CMakeFiles/ekf_node.dir/src/ekf_node.o: /home/rvalenti/ros/ccny-ros-pkg/mav_tools/mav_msgs/msg_gen/generated
 CMakeFiles/ekf_node.dir/src/ekf_node.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/ekf_node.dir/src/ekf_node.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/rvalenti/ros/ccny-ros-pkg/EKF/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/ekf_node.dir/src/ekf_node.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/ekf_node.dir/src/ekf_node.o -c /home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_node.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/ekf_node.dir/src/ekf_node.o -c /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf_node.cpp
 
 CMakeFiles/ekf_node.dir/src/ekf_node.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ekf_node.dir/src/ekf_node.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_node.cpp > CMakeFiles/ekf_node.dir/src/ekf_node.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf_node.cpp > CMakeFiles/ekf_node.dir/src/ekf_node.i
 
 CMakeFiles/ekf_node.dir/src/ekf_node.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ekf_node.dir/src/ekf_node.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_node.cpp -o CMakeFiles/ekf_node.dir/src/ekf_node.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf_node.cpp -o CMakeFiles/ekf_node.dir/src/ekf_node.s
 
 CMakeFiles/ekf_node.dir/src/ekf_node.o.requires:
 .PHONY : CMakeFiles/ekf_node.dir/src/ekf_node.o.requires
@@ -122,6 +122,6 @@ CMakeFiles/ekf_node.dir/clean:
 .PHONY : CMakeFiles/ekf_node.dir/clean
 
 CMakeFiles/ekf_node.dir/depend:
-	cd /home/rvalenti/ros/ccny-ros-pkg/EKF/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rvalenti/ros/ccny-ros-pkg/EKF /home/rvalenti/ros/ccny-ros-pkg/EKF /home/rvalenti/ros/ccny-ros-pkg/EKF/build /home/rvalenti/ros/ccny-ros-pkg/EKF/build /home/rvalenti/ros/ccny-ros-pkg/EKF/build/CMakeFiles/ekf_node.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/build/CMakeFiles/ekf_node.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ekf_node.dir/depend
 

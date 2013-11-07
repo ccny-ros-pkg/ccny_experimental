@@ -184,7 +184,7 @@ CMakeFiles/ekf_nodelet.dir/src/ekf_nodelet.o
  ../include/EKF/EXTERNAL/eigen3/Eigen/src/misc/Solve.h
  ../include/EKF/ekf.h
  ../include/EKF/ekf_nodelet.h
- /home/rvalenti/ros/ccny-ros-pkg/EKF/src/ekf_nodelet.cpp
+ /home/rvalenti/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/EKF/src/ekf_nodelet.cpp
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/geometry_msgs/Point.h

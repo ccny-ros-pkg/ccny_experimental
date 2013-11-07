@@ -1,15 +1,12 @@
 <launch>
 
-#### Lunch Phidgets_driver ###########################################################
+#### launch xsens_driver ###############################################
 
-  <node pkg="nodelet" type="nodelet" name="PhidgetsImuNodelet" 
-    args="load phidgets_imu/PhidgetsImuNodelet imu_manager" 
-    output="screen">
-
-   # supported data rates: 4 8 16 24 32 40 ... 1000 (in ms)
-    <param name="period" value="4"/>
-    
-  </node>
+  
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+    <remap from="imu/data" to="imu/data_raw"/>
+	</node> 
 
 #### launch EKF ###############################################
 
