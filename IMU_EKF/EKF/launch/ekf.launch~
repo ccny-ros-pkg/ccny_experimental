@@ -15,18 +15,19 @@
 
   
 	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
-  <param name="sigma_g"     value="0.00001"/>  
+
+  <param name="sigma_g"     value="0.0001"/>  
   
   <param name="sigma_a"     value="0.0001"/>
   
-  <param name="sigma_bax"     value="0.00000001"/>
-  <param name="sigma_bay"     value="0.00000001"/> 
-  <param name="sigma_baz"     value="0.00000001"/>
+  <param name="sigma_bax"     value="0.00001"/>
+  <param name="sigma_bay"     value="0.00001"/> 
+  <param name="sigma_baz"     value="0.0003"/>
 
-  <param name="sigma_bgx"     value="0.0000000000001"/>
-  <param name="sigma_bgy"     value="0.0000000000001"/> 
-  <param name="sigma_bgz"     value="0.00000000000001"/>
-
+  <param name="sigma_bgx"     value="0.0001"/>
+  <param name="sigma_bgy"     value="0.00012"/> 
+  <param name="sigma_bgz"     value="0.00035"/>
+  <param name="lambda"        value="1"/>
   <param name="alpha"        value="0.000000001"/>
   </node>
 

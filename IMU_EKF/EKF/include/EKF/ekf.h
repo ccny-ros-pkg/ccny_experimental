@@ -47,6 +47,7 @@ class EKF
     
     ros::Publisher roll_ekf_publisher_; 
     ros::Publisher pitch_ekf_publisher_;
+    ros::Publisher yaw_ekf_publisher_;
     ros::Publisher bias_ax_publisher_;
     ros::Publisher bias_ay_publisher_;    
     ros::Publisher bias_az_publisher_;
@@ -64,7 +65,7 @@ class EKF
     double sigma_g_;
     
     double sigma_a_;
-    
+    double lambda_;
     double sigma_bax_;
     double sigma_bay_;
     double sigma_baz_;

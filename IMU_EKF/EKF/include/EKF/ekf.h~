@@ -50,6 +50,9 @@ class EKF
     ros::Publisher bias_ax_publisher_;
     ros::Publisher bias_ay_publisher_;    
     ros::Publisher bias_az_publisher_;
+    ros::Publisher bias_gx_publisher_;
+    ros::Publisher bias_gy_publisher_;    
+    ros::Publisher bias_gz_publisher_;
     ros::Publisher roll_acc_publisher_;
     ros::Publisher pitch_acc_publisher_;
     tf::TransformBroadcaster tf_broadcaster_;
@@ -61,7 +64,7 @@ class EKF
     double sigma_g_;
     
     double sigma_a_;
-    
+    double lambda_;
     double sigma_bax_;
     double sigma_bay_;
     double sigma_baz_;
