@@ -20,15 +20,13 @@
   
   <param name="sigma_a"     value="0.0001"/>
   
-  <param name="sigma_bax"     value="0.00001"/>
-  <param name="sigma_bay"     value="0.0001"/> 
-  <param name="sigma_baz"     value="0.0003"/>
-
-  <param name="sigma_bgx"     value="0.0001"/>
-  <param name="sigma_bgy"     value="0.00012"/> 
-  <param name="sigma_bgz"     value="0.00035"/>
-  <param name="lambda"        value="1"/>
-  <param name="alpha"        value="0.000000001"/>
+  <param name="sigma_bax"              value="0.02"/>
+  <param name="sigma_bay"              value="0.2"/>
+  <param name="sigma_baz"              value="0.003"/>
+  
+  <param name="threshold_gyro_step"   value="0.4"/>
+  <param name="threshold_acc_step"    value="0.1"/>
+  <param name="alpha"                 value="0.005"/>
   </node>
 
 #### IMU Madqwick Orientation Filter#######################################

@@ -56,24 +56,28 @@ class EKF
     ros::Publisher bias_gz_publisher_;
     ros::Publisher roll_acc_publisher_;
     ros::Publisher pitch_acc_publisher_;
+
+    ros::Publisher axfil_publisher_;
+    ros::Publisher bxfil_publisher_; 
+   
     tf::TransformBroadcaster tf_broadcaster_;
 
     Eigen::Vector3f gravity_vec_;
     // **** paramaters
-    Eigen::Matrix<float, 10, 10> P;  // state covariance
-    Eigen::Matrix<float, 10, 1> X;  // State   
+    Eigen::Matrix<float, 7, 7> P;  // state covariance
+    Eigen::Matrix<float, 7, 1> X;  // State   
     double sigma_g_;
     
     double sigma_a_;
-    double lambda_;
+    double alpha_;
     double sigma_bax_;
     double sigma_bay_;
     double sigma_baz_;
     double sigma_bgx_;
     double sigma_bgy_;
     double sigma_bgz_;
-    double threshold_;
-    double alpha_;
+    double threshold_g_;
+    double threshold_a_;
     std::string fixed_frame_;
     std::string imu_frame_;
     std_msgs::Header imu_header_;
@@ -112,7 +116,8 @@ class EKF
 
     double q0, q1, q2, q3;  // quaternion
     float b_ax, b_ay, b_az; // acceleration bias
-    float b_gx, b_gy, b_gz; // gyroscope bias
+    float b_gx_, b_gy_, b_gz_; // gyroscope bias
+    float p_prev_, q_prev_, r_prev_, ax_prev_, ay_prev_, az_prev_ ;     
     double constant_dt_;
     // **** member functions
 
