@@ -38,17 +38,27 @@ EKF::EKF(ros::NodeHandle nh, ros::NodeHandle nh_private):
 
   roll_acc_publisher_    = nh.advertise<std_msgs::Float32>("roll_acc", queue);
   pitch_acc_publisher_   = nh.advertise<std_msgs::Float32>("pitch_acc", queue);
-
+  yaw_g_publisher_   = nh.advertise<std_msgs::Float32>("yaw_g", queue);
+  yaw_m_publisher_   = nh.advertise<std_msgs::Float32>("yaw_m", queue);
   //acc_mag_publisher_ = nh.advertise<std_msgs::Float32>("acc_mag", queue);
   //g_mag_publisher_   = nh.advertise<std_msgs::Float32>("g_mag", queue);
 
   // **** register subscribers
-  int queue_size = 100;
+  int queue_size = 5;
 
-  imu_subscriber_ = nh_.subscribe(
-    "imu/data_raw", queue_size, &EKF::imuCallback, this);
+//  imu_subscriber_ = nh_.subscribe(
+//    "imu/data_raw", queue_size, &EKF::imuCallback, this);
+ 
 
+imu_subscriber_.reset(new ImuSubscriber(
+    nh_, "imu/data_raw", queue_size));
 
+mag_subscriber_.reset(new MagSubscriber(
+      nh_, "imu/mag", queue_size));
+
+sync_.reset(new Synchronizer(
+      SyncPolicy(queue_size), *imu_subscriber_, *mag_subscriber_));
+    sync_->registerCallback(boost::bind(&EKF::imuMagCallback, this, _1, _2));
 }
 
 
@@ -64,7 +74,7 @@ void EKF::initializeParams()
   if (!nh_private_.getParam ("sigma_gx", sigma_g_))
     sigma_g_ = 0.01;
   
-  if (!nh_private_.getParam ("sigma_ax", sigma_a_))
+  if (!nh_private_.getParam ("sigma_a", sigma_a_))
     sigma_a_ = 0.01;
   
   if (!nh_private_.getParam ("constant_dt", constant_dt_))
@@ -83,6 +93,14 @@ void EKF::initializeParams()
     sigma_bgy_ = 0.01;
   if (!nh_private_.getParam ("sigma_bgz", sigma_bgz_))
     sigma_bgz_ = 0.01;
+  if (!nh_private_.getParam ("hx", hx_))
+    hx_ = 0.2;
+  if (!nh_private_.getParam ("hy", hy_))
+    hy_ = 0.046;
+  if (!nh_private_.getParam ("hz", hz_))
+    hz_ = -0.48;
+  if (!nh_private_.getParam ("sigma_h", sigma_h_))
+    sigma_h_ = 0.01;
   if (!nh_private_.getParam ("fixed_frame", fixed_frame_))
      fixed_frame_ = "odom";
   if (!nh_private_.getParam ("imu_frame", imu_frame_))
@@ -96,26 +114,38 @@ void EKF::initializeParams()
   gravity_vec_ = Eigen::Vector3f(0, 0, 9.81);
 }
 
-void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
+void EKF::imuMagCallback(
+  const ImuMsg::ConstPtr& imu_msg_raw,
+  const MagMsg::ConstPtr& mag_msg)
 {
-
   boost::mutex::scoped_lock(mutex_);
-
-  //sensor_msgs::Imu imu =  *imu_msg_raw;
   
-  //imu.header.stamp = ros::Time::now();
-    
   const geometry_msgs::Vector3& ang_vel = imu_msg_raw->angular_velocity;
   const geometry_msgs::Vector3& lin_acc = imu_msg_raw->linear_acceleration; 
-
+  const geometry_msgs::Vector3& mag_fld = mag_msg->vector;
+  
   ros::Time time = imu_msg_raw->header.stamp;
+  imu_frame_ = imu_msg_raw->header.frame_id;
+
+//void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
+//{
+
+//  boost::mutex::scoped_lock(mutex_);
+
+    
+//  const geometry_msgs::Vector3& ang_vel = imu_msg_raw->angular_velocity;
+//  const geometry_msgs::Vector3& lin_acc = imu_msg_raw->linear_acceleration; 
+
+//  ros::Time time = imu_msg_raw->header.stamp;
   
 
   float a_x = lin_acc.x;
   float a_y = lin_acc.y;
   float a_z = lin_acc.z;
+  float mx = mag_fld.x;
+  float my = mag_fld.y;
+  float mz = mag_fld.z;
 
-  
   float dt;
   if (!initialized_filter_)
     {
@@ -123,8 +153,7 @@ void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
       // initialize roll/pitch orientation from acc. vector
   	  double roll  = atan2(a_y, sqrt(a_x*a_x + a_z*a_z));
   	  double pitch = atan2(-a_x, sqrt(a_y*a_y + a_z*a_z));
-  	  double yaw = 0.0;
-
+  	  double yaw = atan2( (-my*cos(roll) + mz*sin(roll) ) , (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
       tf::Quaternion init_q = tf::createQuaternionFromRPY(roll, pitch, yaw);
       
       //INITIALIZE STATE
@@ -147,7 +176,7 @@ void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
       ay_prev_ = 0;
       az_prev_ = 0;
       //INITIALIZE COVARIANCE
-
+      yaw_g = 0.0;
       //P = Eigen::MatrixXf::Identity(7, 7);
       P = Eigen::MatrixXf::Zero(7, 7);
 
@@ -169,6 +198,7 @@ void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 
     filter(ang_vel.x, ang_vel.y, ang_vel.z,
     lin_acc.x, lin_acc.y, lin_acc.z,
+    mag_fld.x, mag_fld.y, mag_fld.z,
     dt);
     
     std_msgs::Float32 acc_mag_msg;
@@ -180,7 +210,8 @@ void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 }
 
 void EKF::filter(float p, float q, float r, 
-  float ax, float ay, float az, 
+  float ax, float ay, float az,
+  float mx, float my, float mz, 
   float dt)
 {
 
@@ -191,57 +222,55 @@ void EKF::filter(float p, float q, float r,
   Eigen::Matrix<float, 7, 7> Q;  // process noise covariance
   Eigen::Matrix<float, 4, 3> Xi; // quaternion covariance 
   Eigen::Matrix<float, 4, 4> W;
-  Eigen::Matrix<float, 3, 7> H;  // Measurement model Jacobian
-  Eigen::Matrix<float, 7, 3> K;  // Kalman gain
-  Eigen::Matrix3f Sigma_g, Sigma_a, Sigma_ba, Sigma_bg, R, C_bn, I3;
+  Eigen::Matrix<float, 6, 7> H;  // Measurement model Jacobian
+  Eigen::Matrix<float, 7, 6> K;  // Kalman gain
+  Eigen::Matrix<float, 6, 6> R;
+  Eigen::Matrix3f Sigma_g, Sigma_a, Sigma_h, Sigma_ba, Sigma_bg, C_bn, I3;
   I3 = Eigen::MatrixXf::Identity(3,3);
 
-  Eigen::Vector3f Z_est;
+  //Eigen::Vector3f Z_est;
+  Eigen::Matrix<float, 6, 1> Z_est;  
   Eigen::Vector3f bias_vec;
   float wx_hut, wy_hut, wz_hut;
   double c,s, j;
   c=1; s=1;
   //float pdt, qdt, rdt;
   float norm;
-  float w_norm;
-  //pdt = p*dt;
-  //qdt = q*dt;
-  //rdt = r*dt;
-  ax=ax+0.2;
-  ay=ay+0.2;
-  az=az+0.2;
+  float w_norm, m_norm;
+  yaw_g = yaw_g + r*dt; 
    // compute "a priori" state estimate 
   wx_hut = p-b_gx_; 
   wy_hut = q-b_gy_; 
   wz_hut = r-b_gz_;
 
-  q1 += 0.5 * dt * ( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
-  q2 += 0.5 * dt * ( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
-  q3 += 0.5 * dt * (-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
-  q0 += 0.5 * dt * (-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);  
+  //q1 += 0.5 * dt * ( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
+  //q2 += 0.5 * dt * ( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
+  //q3 += 0.5 * dt * (-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
+  //q0 += 0.5 * dt * (-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);  
 
    
-   
-  w_norm = sqrt(wx_hut*wx_hut+wy_hut*wy_hut+wz_hut*wz_hut);
-  //j = 1-sqrt(q1*q1 + q2*q2 + q3*q3 + q0*q0);
+  m_norm = sqrt(mx*mx + my*my+mz*mz);
+   w_norm = sqrt(wx_hut*wx_hut+wy_hut*wy_hut+wz_hut*wz_hut);
+   //j = 1-sqrt(q1*q1 + q2*q2 + q3*q3 + q0*q0);
 
-  if (w_norm >0)
-    {
-      s = (sin(w_norm*dt*0.5))/(w_norm*dt*0.5);
-      c = cos(w_norm*dt*0.5);
+   if (w_norm >0)
+   {
+    s = (sin(w_norm*dt*0.5))/(w_norm*dt*0.5);
+    c = cos(w_norm*dt*0.5);
     }
   ROS_INFO("c, s: %f,%f", c, s);
     
-  ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s); 
+ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
 //c + lambda_*j*dt
-   q1 = q1*c + 0.5*dt*s*( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
-   q2 = q2*c + 0.5*dt*s*( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
-   q3 = q3*c + 0.5*dt*s*(-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
-   q0 = q0*c + 0.5*dt*s*(-wx_hut*q1 - wy_hut*q2 - wz_hut*q3); 
+  q1 = q1*c + 0.5*dt*s*( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
+  q2 = q2*c + 0.5*dt*s*( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
+  q3 = q3*c + 0.5*dt*s*(-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
+  q0 = q0*c + 0.5*dt*s*(-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);
 
 
-  ROS_INFO("q: %f,%f,%f,%f", q1, q2, q3, q0);
-
+ 
+ // ROS_INFO("q: %f,%f,%f,%f", q1, q2, q3, q0);
+  ROS_INFO("MAG_NORM: %f", m_norm);
   bias_vec << b_ax, b_ay, b_az;
 
   X << q1,
@@ -264,49 +293,25 @@ void EKF::filter(float p, float q, float r,
 
 
 
-//F = Eigen::MatrixXf::Identity(10,10);
-//std::cout << "F" << F << std::endl;
-
-//ROS_INFO("bg: %f,%f,%f", b_gx, b_gy, b_gz); 
-//ROS_INFO("ba: %f,%f,%f", b_ax, b_ay, b_az);
-
-
   Sigma_a = sigma_a_ * I3;
   Sigma_g = sigma_g_ * I3;
+  Sigma_h = sigma_h_ * I3;
   
-  
-
- 
-
   Sigma_ba <<   sigma_bax_, 0, 0,            
                 0, sigma_bay_, 0,
                 0,        0, sigma_baz_;
     
- 
-
- ROS_INFO("sigmab: %f,%f,%f", Sigma_ba(0,0),Sigma_ba(1,1),Sigma_ba(2,2));
-
   Xi << q0, -q3,  q2,
         q3,  q0, -q1,
        -q2,  q1,  q0,
        -q1, -q2, -q3;
 
-  std::cout << "Sigma_ba" << Sigma_ba << std::endl;
   float dt2 = dt*dt*0.25;
   
   W.noalias() = dt2 * (Xi *Sigma_g * Xi.transpose());
-    /*
-    Eigen::Matrix<float, 4, 1> quat; 
-    quat << q1,q2,q3,q0;
-    Eigen::Matrix<float, 4, 4> M, I, P_q;
-    I = Eigen::MatrixXf::Identity(4, 4);    
-    
-    P_q = P.block<4,4>(0,0);
-    M = (quat*quat.transpose()) + P_q;
-    W = sigma_g_*dt2*(M.trace()*I - M);
-    */
-    Q = Eigen::MatrixXf::Zero(7,7);
-    Q.block<4,4>(0,0)= W; Q.block<3,3>(4,4)=(dt * Sigma_ba ); 
+   
+  Q = Eigen::MatrixXf::Zero(7,7);
+  Q.block<4,4>(0,0)= W; Q.block<3,3>(4,4)=(dt * Sigma_ba ); 
  
 //std::cout << "P" << P << std::endl;
 //std::cout << "Q" << Q << std::endl;
@@ -316,69 +321,87 @@ void EKF::filter(float p, float q, float r,
   P = (F*(P*F.transpose())) + Q;
  
     // CORRECTION /
+
     
    C_bn <<  (q1*q1-q2*q2-q3*q3+q0*q0),   2*(q1*q2+q3*q0),                    2*(q1*q3-q2*q0),
             2*(q1*q2-q3*q0),            -q1*q1+q2*q2-q3*q3+q0*q0,            2*(q2*q3+q1*q0),
             2*(q1*q3+q2*q0),             2*(q2*q3-q1*q0),           -q1*q1-q2*q2+q3*q3+q0*q0; 
 
-    
-    
     //Z_est = (C_bn*gravity_vec_) + bias_vec;
 
 
-  Z_est <<             2*(q1*q3-q2*q0)*9.81 + b_ax,
-                       2*(q2*q3+q1*q0)*9.81 + b_ay,
-            (-q1*q1-q2*q2+q3*q3+q0*q0)*9.81 + b_az;
+  Z_est <<                                                     2*(q1*q3-q2*q0)*9.81,// + b_ax,
+                                                               2*(q2*q3+q1*q0)*9.81,// + b_ay,
+                                                    (-q1*q1-q2*q2+q3*q3+q0*q0)*9.81,//+ b_az,
+                 0,//(q1*q1-q2*q2-q3*q3+q0*q0)*hx_ + 2*(q1*q2+q3*q0)*hy_ + 2*(q1*q3-q2*q0)*hz_,
+                0,//2*(q1*q2-q3*q0)*hx_ + (-q1*q1+q2*q2-q3*q3+q0*q0)*hy_ + 2*(q2*q3+q1*q0)*hz_,
+                0;//2*(q1*q3+q2*q0)*hx_ + 2*(q2*q3-q1*q0)*hy_ + (-q1*q1-q2*q2+q3*q3+q0*q0)*hz_;
 
-    //ROS_INFO("bias: %f,%f,%f", bias_vec(0),bias_vec(1),bias_vec(2));
-    //ROS_INFO("rotated g: %f,%f,%f", Z_est(0),Z_est(1),Z_est(2));
-    //ROS_INFO("rotated g: %f,%f,%f", Z_est(0)-bias_vec(0),Z_est(1)-bias_vec(1),Z_est(2)-bias_vec(2));
-    
-    //ROS_INFO("acc vector: %f,%f,%f", ax, ay, az);  
+
+   ROS_INFO("ROTATED H: %f,%f,%f", Z_est(0), Z_est(1), Z_est(2));
  
+     Eigen::Matrix<float, 6, 1>   Z_meas, fields;
+     Z_meas << ax, ay, az, 0,0,0;//mx, my, mz;
+
+    
+    std::cout << "Z_est" << Z_est << std::endl;
+    //  Jacobian matrix (H) of Z_est.
+
+    H <<                                                                       9.81*2*q3, -9.81*2*q0, 9.81*2*q1, -9.81*2*q2, 0, 0, 0,
+                                                                               9.81*2*q0,  9.81*2*q3, 9.81*2*q2,  9.81*2*q1, 0, 0, 0,
+                                                                              -9.81*2*q1, -9.81*2*q2, 9.81*2*q3,  9.81*2*q0, 0, 0, 0,
+        2*q1*hx_+2*q2*hy_+2*q3*hz_, -2*q2*hx_+2*q1*hy_-2*q0*hz_,  -2*q3*hx_+2*q0*hy_+2*q1*hz_,  2*q0*hx_+2*q3*hy_-2*q2*hz_,  0, 0, 0,
+        2*q2*hx_-2*q1*hy_+2*q0*hz_,  2*q1*hx_+2*q2*hy_+2*q3*hz_, -2*q0*hx_- 2*q3*hy_+2*q2*hz_, -2*q3*hx_+2*q0*hy_+2*q1*hz_,  0, 0, 0,  
+        2*q3*hx_-2*q0*hy_-2*q1*hz_,  2*q0*hx_+2*q3*hy_-2*q0*hz_,   2*q1*hx_+2*q2*hy_+2*q3*hz_,  2*q2*hx_-2*q1*hy_+2*q0*hz_,  0, 0, 0;
   
 
 
-
- Eigen::Vector3f Z_meas(ax, ay, az);
-        
-    //  Jacobian matrix (H) of Z_est.
-
-  H << 9.81*2*q3, -9.81*2*q0, 9.81*2*q1, -9.81*2*q2, 1, 0, 0,
-       9.81*2*q0,  9.81*2*q3, 9.81*2*q2,  9.81*2*q1, 0, 1, 0,
-      -9.81*2*q1, -9.81*2*q2, 9.81*2*q3,  9.81*2*q0, 0, 0, 1;
-
-
-
-    R = Sigma_a;
-    
+    R = Eigen::MatrixXf::Zero(6,6);
+    R.block<3,3>(0,0) = Sigma_a; R.block<3,3>(3,3) = Sigma_h; 
+    //R = Sigma_a;
+    //std::cout << "R" << R << std::endl;
     //Compute the Kalman gain K
     
-    Eigen::Matrix<float, 3, 3> S;
+    Eigen::Matrix<float, 6, 6> S;
     
     S = H*P*H.transpose() + R;
     K = P*H.transpose()*S.inverse();
-    std::cout << "K" << K << std::endl;
+    //std::cout << "K" << K << std::endl;
    
-    Eigen::Vector3f Error_vec;
+    //Eigen::Vector3f Error_vec;
+    Eigen::Matrix<float, 6, 1> Error_vec;
+
+  if (isnan(mx))
+  {
+    Error_vec << ax - Z_est(0),
+                 ay - Z_est(1),
+                 az - Z_est(2),
+                            0,  
+                            0,
+                            0;  
+  }
+  else
     Error_vec = Z_meas - Z_est;
-    ROS_INFO("error1: %f,%f,%f", Error_vec(0),Error_vec(1),Error_vec(2));
+    //ROS_INFO("error1: %f,%f,%f,%f,%f,%f", Error_vec(0),Error_vec(1),Error_vec(2), Error_vec(3), Error_vec(4), Error_vec(5));
    
     // Update State and Covariance  
     X.noalias() += K * Error_vec;
+    
+  /*
     if ( fabs(q - q_prev_)> threshold_a_ || fabs(q-b_gy_)>0.1 || fabs(ay - ay_prev_) > threshold_a_ || fabs(ax) > 1)
-    X(4) = b_ax;
-  if (fabs(ay - ay_prev_)/dt > threshold_a_ || fabs(p-b_gx_)>0.4)
-    X(5) = b_ay;
-  if (fabs(az - az_prev_)/dt > threshold_a_)
-    X(6) = b_az;
-ROS_INFO("step, th: %f,%f", fabs(ax - ax_prev_),threshold_a_);
+      X(4) = b_ax;
+    if (fabs(ay - ay_prev_)/dt > threshold_a_ || fabs(p-b_gx_)>0.4)
+      X(5) = b_ay;
+    if (fabs(az - az_prev_)/dt > threshold_a_)
+      X(6) = b_az;
+    ROS_INFO("step, th: %f,%f", fabs(ax - ax_prev_),threshold_a_);
    ax_prev_ = ax; 
    ay_prev_ = ay;
    az_prev_ = az;  
+ 
     P.noalias() -= K*(H*P);
-    //P -= K*(H*P);
-      
+  */  
+   //}   
   
     //std::cout << "P" << P << std::endl;
 
@@ -393,16 +416,18 @@ ROS_INFO("step, th: %f,%f", fabs(ax - ax_prev_),threshold_a_);
     q3 *= norm;
     q0 *= norm;
 
-    if (fabs(p - p_prev_)< threshold_g_ && fabs(p-b_gx_)<1.0)
+    if (fabs(p - p_prev_)< threshold_g_ && fabs(p-b_gx_)<0.5)
       b_gx_ = b_gx_ + alpha_ * (p - b_gx_);
-    if (fabs(q - q_prev_)< threshold_g_ && fabs(q-b_gy_)<1.0)
+    if (fabs(q - q_prev_)< threshold_g_ && fabs(q-b_gy_)<0.5)
       b_gy_ = b_gy_ + alpha_ * (q - b_gy_);
 
-    if (fabs(r - r_prev_)< threshold_g_ && fabs(r-b_gz_)<1.0)
+    if (fabs(r - r_prev_)< threshold_g_ && fabs(r-b_gz_)<0.5)
       b_gz_ = b_gz_ + alpha_ * (r - b_gz_);
     
     p_prev_ = p; q_prev_ = q; r_prev_ = r;
-
+ 
+    ax_ = ax; ay_ = ay; az_ = az;
+    mx_ = mx; my_ = my; mz_ = mz;
 }
 
 
@@ -445,16 +470,27 @@ void EKF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   tf::quaternionTFToMsg(q, imu_msg->orientation);
   imu_EKF_publisher_.publish(imu_msg);
 
-  double roll, pitch, yaw;
+  double roll, pitch, yaw, yaw_m;
   tf::Matrix3x3 M;
   M.setRotation(q);
   M.getRPY(roll, pitch, yaw);
   std_msgs::Float32 roll_msg;
   std_msgs::Float32 pitch_msg;
   std_msgs::Float32 yaw_msg;
+  std_msgs::Float32 yaw_g_msg;
+  std_msgs::Float32 yaw_m_msg;
+
   roll_msg.data = roll;
   pitch_msg.data = pitch;
   yaw_msg.data = yaw;
+  yaw_g_msg.data = yaw_g;
+
+  double rolla  = atan2(ay_, sqrt(ax_*ax_ + az_*az_));
+  double pitcha = atan2(-ax_, sqrt(ay_*ay_ + az_*az_));
+  yaw_m =atan2( (-my_*cos(rolla) + mz_*sin(rolla) ) , (mx_*cos(pitcha) + my_*sin(pitcha)*sin(rolla) + mz_*sin(pitcha)*cos(rolla)) );
+  //yaw_m =atan2( (mx_*sin(roll)*sin(pitch) + my_*cos(roll) - mz_*sin(roll)*sin(pitch)),(mx_*cos(pitch)+ mz_*sin(pitch)) );
+  yaw_m_msg.data = yaw_m;
+
   roll_ekf_publisher_.publish(roll_msg);
   std_msgs::Float32 bias_ax_msg;
   std_msgs::Float32 bias_ay_msg;
@@ -474,6 +510,9 @@ void EKF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   
   pitch_ekf_publisher_.publish(pitch_msg);
   yaw_ekf_publisher_.publish(yaw_msg);
+  yaw_g_publisher_.publish(yaw_g_msg);
+  yaw_m_publisher_.publish(yaw_m_msg);  
+  
   bias_ax_publisher_.publish(bias_ax_msg);
   bias_ay_publisher_.publish(bias_ay_msg);  
   bias_az_publisher_.publish(bias_az_msg);
@@ -481,6 +520,8 @@ void EKF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   bias_gx_publisher_.publish(bias_gx_msg);
   bias_gy_publisher_.publish(bias_gy_msg);  
   bias_gz_publisher_.publish(bias_gz_msg);
+
+  
     
   const geometry_msgs::Vector3& lin_acc = imu_msg_raw->linear_acceleration; 
 

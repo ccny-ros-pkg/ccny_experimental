@@ -24,20 +24,33 @@ class EKF
     virtual ~EKF();
 
   private:
+    typedef sensor_msgs::Imu              ImuMsg;
+    typedef geometry_msgs::Vector3Stamped MagMsg;
+
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, geometry_msgs::Vector3Stamped> MySyncPolicy;
-    message_filters::Synchronizer<MySyncPolicy> * sync_;
-    message_filters::Subscriber<sensor_msgs::Imu> * imu_sub_;
-    message_filters::Subscriber<geometry_msgs::Vector3Stamped> * lin_acc_sub_;
+    typedef message_filters::sync_policies::ApproximateTime<ImuMsg, MagMsg> SyncPolicy;
+    typedef message_filters::Synchronizer<SyncPolicy> Synchronizer;    
+    typedef message_filters::Subscriber<ImuMsg> ImuSubscriber; 
+    typedef message_filters::Subscriber<MagMsg> MagSubscriber;
+
+   // message_filters::Synchronizer<MySyncPolicy> * sync_;
+   // message_filters::Subscriber<sensor_msgs::Imu> * imu_sub_;
+   // message_filters::Subscriber<geometry_msgs::Vector3Stamped> * lin_acc_sub_;
     //message_filters::TimeSynchronizer<sensor_msgs::Imu, geometry_msgs::Vector3Stamped> *sync_;
     // **** ROS-related
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
+    
+    boost::shared_ptr<Synchronizer> sync_;
+    boost::shared_ptr<ImuSubscriber> imu_subscriber_;
+    boost::shared_ptr<MagSubscriber> mag_subscriber_;
+
     ros::Subscriber pose_subscriber_;
     
     ros::Publisher pos_publisher_;    
     ros::Publisher acc_publisher_;
     ros::Publisher vel_publisher_;
-    ros::Subscriber imu_subscriber_;
+    //ros::Subscriber imu_subscriber_;
     ros::Publisher unf_pos_publisher_;  
     ros::Publisher unf_vel_publisher_;
     ros::Publisher unf_acc_publisher_;
@@ -48,6 +61,8 @@ class EKF
     ros::Publisher roll_ekf_publisher_; 
     ros::Publisher pitch_ekf_publisher_;
     ros::Publisher yaw_ekf_publisher_;
+    ros::Publisher yaw_g_publisher_;
+    ros::Publisher yaw_m_publisher_;
     ros::Publisher bias_ax_publisher_;
     ros::Publisher bias_ay_publisher_;    
     ros::Publisher bias_az_publisher_;
@@ -76,8 +91,17 @@ class EKF
     double sigma_bgx_;
     double sigma_bgy_;
     double sigma_bgz_;
-    double threshold_g_;
+    double sigma_h_;
+    
+    double hx_;
+    double hy_;
+    double hz_;
+    
+    float mx_, my_, mz_, ax_, ay_, az_;
+    
     double threshold_a_;
+    double threshold_g_;
+    float yaw_g;
     std::string fixed_frame_;
     std::string imu_frame_;
     std_msgs::Header imu_header_;
@@ -124,11 +148,14 @@ class EKF
     void initializeParams();
     void callback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw, const  geometry_msgs::Vector3Stamped::ConstPtr lin_acc_msg);
     void imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
+    void imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
+                        const MagMsg::ConstPtr& mav_msg);
     void poseCallback(const geometry_msgs::PoseStamped::ConstPtr pose_msg);
     void abgFilter(tf::Vector3 pos_reading, std_msgs::Header header, double dt);
     void filter(
       float p, float q, float r,
       float ax, float ay, float az,
+      float mx, float my, float mz,
       float dt);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
     void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
