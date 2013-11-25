@@ -82,7 +82,7 @@ class EKF
     Eigen::Matrix<float, 7, 7> P;  // state covariance
     Eigen::Matrix<float, 7, 1> X;  // State   
     double sigma_g_;
-    
+    static const double gmag_= -9.81;
     double sigma_a_;
     double alpha_;
     double sigma_bax_;
@@ -97,7 +97,7 @@ class EKF
     double hy_;
     double hz_;
     
-    float mx_, my_, mz_, ax_, ay_ az_;
+    float mx_, my_, mz_, ax_, ay_, az_;
     
     double threshold_a_;
     double threshold_g_;

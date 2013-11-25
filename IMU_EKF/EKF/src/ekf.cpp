@@ -153,7 +153,8 @@ void EKF::imuMagCallback(
       // initialize roll/pitch orientation from acc. vector
   	  double roll  = atan2(a_y, sqrt(a_x*a_x + a_z*a_z));
   	  double pitch = atan2(-a_x, sqrt(a_y*a_y + a_z*a_z));
-  	  double yaw = atan2( (-my*cos(roll) + mz*sin(roll) ) , (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
+  	  double yaw = 0.0;//atan2( (-my*cos(roll) + mz*sin(roll) ) , (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
+      //double yaw = atan2( (my*cos(roll) - mz*sin(roll) ) , (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
       tf::Quaternion init_q = tf::createQuaternionFromRPY(roll, pitch, yaw);
       
       //INITIALIZE STATE
@@ -176,7 +177,7 @@ void EKF::imuMagCallback(
       ay_prev_ = 0;
       az_prev_ = 0;
       //INITIALIZE COVARIANCE
-      yaw_g = 0.0;
+      yaw_g = yaw;//0.0;
       //P = Eigen::MatrixXf::Identity(7, 7);
       P = Eigen::MatrixXf::Zero(7, 7);
 
@@ -218,8 +219,9 @@ void EKF::filter(float p, float q, float r,
   /************************** PREDICTION *****************************/
 
   
-  Eigen::Matrix<float, 7, 7> F;  // State-transition matrix             
-  Eigen::Matrix<float, 7, 7> Q;  // process noise covariance
+  Eigen::Matrix<float, 7, 7> F, I7;  // State-transition matrix             
+  Eigen::Matrix<float, 6, 6> Q;  // process noise covariance
+  Eigen::Matrix<float, 7, 6> G;  
   Eigen::Matrix<float, 4, 3> Xi; // quaternion covariance 
   Eigen::Matrix<float, 4, 4> W;
   Eigen::Matrix<float, 6, 7> H;  // Measurement model Jacobian
@@ -227,7 +229,7 @@ void EKF::filter(float p, float q, float r,
   Eigen::Matrix<float, 6, 6> R;
   Eigen::Matrix3f Sigma_g, Sigma_a, Sigma_h, Sigma_ba, Sigma_bg, C_bn, I3;
   I3 = Eigen::MatrixXf::Identity(3,3);
-
+  I7 = Eigen::MatrixXf::Identity(7,7);
   //Eigen::Vector3f Z_est;
   Eigen::Matrix<float, 6, 1> Z_est;  
   Eigen::Vector3f bias_vec;
@@ -243,16 +245,16 @@ void EKF::filter(float p, float q, float r,
   wy_hut = q-b_gy_; 
   wz_hut = r-b_gz_;
 
-  //q1 += 0.5 * dt * ( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
-  //q2 += 0.5 * dt * ( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
-  //q3 += 0.5 * dt * (-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
-  //q0 += 0.5 * dt * (-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);  
+  q1 += 0.5 * dt * ( wx_hut*q0 - wy_hut*q3 + wz_hut*q2);
+  q2 += 0.5 * dt * ( wx_hut*q3 + wy_hut*q0 - wz_hut*q1);
+  q3 += 0.5 * dt * (-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
+  q0 += 0.5 * dt * (-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);  
 
    
   m_norm = sqrt(mx*mx + my*my+mz*mz);
    w_norm = sqrt(wx_hut*wx_hut+wy_hut*wy_hut+wz_hut*wz_hut);
    //j = 1-sqrt(q1*q1 + q2*q2 + q3*q3 + q0*q0);
-
+/*
    if (w_norm >0)
    {
     s = (sin(w_norm*dt*0.5))/(w_norm*dt*0.5);
@@ -267,7 +269,7 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
   q3 = q3*c + 0.5*dt*s*(-wx_hut*q2 + wy_hut*q1 + wz_hut*q0);
   q0 = q0*c + 0.5*dt*s*(-wx_hut*q1 - wy_hut*q2 - wz_hut*q3);
 
-
+*/
  
  // ROS_INFO("q: %f,%f,%f,%f", q1, q2, q3, q0);
   ROS_INFO("MAG_NORM: %f", m_norm);
@@ -293,6 +295,7 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
 
 
 
+
   Sigma_a = sigma_a_ * I3;
   Sigma_g = sigma_g_ * I3;
   Sigma_h = sigma_h_ * I3;
@@ -303,22 +306,38 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
     
   Xi << q0, -q3,  q2,
         q3,  q0, -q1,
-       -q2,  q1,  q0,
+        q2, -q1,  q0,
        -q1, -q2, -q3;
+  
+  
+  G = Eigen::MatrixXf::Zero(7,6);
+  G.block<4,3>(0,0) = (0.5*dt) * Xi;
+  G.block<3,3>(4,3) = dt*Eigen::MatrixXf::Identity(3,3);
 
   float dt2 = dt*dt*0.25;
-  
-  W.noalias() = dt2 * (Xi *Sigma_g * Xi.transpose());
+/*
+  Eigen::Matrix<float, 4, 1> quat;
+  quat << q1,q2,q3,q0;
+  //std::cout << "q" <<quat << std::endl;
+  Eigen::Matrix<float, 4, 4> M, I, P_q;
+  I = Eigen::MatrixXf::Identity(4, 4);
+  P_q = P.block<4,4>(0,0);
+  M = (quat*quat.transpose());// + P_q;
+  //std::cout << "M" << M << std::endl;
+  W = sigma_g_*dt2*(M.trace()*I - M);
+  */
+ // W.noalias() = dt2 * (Xi *Sigma_g * Xi.transpose());
    
-  Q = Eigen::MatrixXf::Zero(7,7);
-  Q.block<4,4>(0,0)= W; Q.block<3,3>(4,4)=(dt * Sigma_ba ); 
+  Q = Eigen::MatrixXf::Zero(6,6);
+  Q.block<3,3>(0,0) = Sigma_g; 
+  Q.block<3,3>(3,3) = Sigma_ba; 
  
 //std::cout << "P" << P << std::endl;
 //std::cout << "Q" << Q << std::endl;
    
 // compute "a priori" covariance matrix (P)
     
-  P = (F*(P*F.transpose())) + Q;
+  P = (F*(P*F.transpose())) + G*Q*G.transpose();
  
     // CORRECTION /
 
@@ -329,19 +348,48 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
 
     //Z_est = (C_bn*gravity_vec_) + bias_vec;
 
+    Eigen::Vector3f Z_est_nomag, Z_meas_nomag, Error_vec_nomag;
+    Eigen::Matrix<float, 3, 3> S_nomag;
+    Eigen::Matrix<float, 3, 7> H_nomag;
+    Eigen::Matrix<float, 7, 3> K_nomag;
+     
+    Z_est_nomag <<            2*(q1*q3-q2*q0)*gmag_,// + b_ax,
+                              2*(q2*q3+q1*q0)*gmag_,// + b_ay,
+                   (-q1*q1-q2*q2+q3*q3+q0*q0)*gmag_;// + b_az;
+
+    H_nomag <<    gmag_*2*q3, -gmag_*2*q0, gmag_*2*q1, -gmag_*2*q2, 0, 0, 0,
+                  gmag_*2*q0,  gmag_*2*q3, gmag_*2*q2,  gmag_*2*q1, 0, 0, 0,
+                 -gmag_*2*q1, -gmag_*2*q2, gmag_*2*q3,  gmag_*2*q0, 0, 0, 0;
+
+     
+
+    Z_meas_nomag << ax,
+                    ay,
+                    az;
+
+    Error_vec_nomag = Z_meas_nomag - Z_est_nomag;
+
+    S_nomag = (H_nomag*P*H_nomag.transpose()) + Sigma_a;
+    std::cout << "S" << S_nomag << std::endl;
+    K_nomag = P*H_nomag.transpose()*S_nomag.inverse();
+    
+    X.noalias() += K_nomag * Error_vec_nomag;
+    P.noalias() -= K_nomag*H_nomag*P;
+  
+  /*
 
   Z_est <<                                                     2*(q1*q3-q2*q0)*9.81,// + b_ax,
-                                                               2*(q2*q3+q1*q0)*9.81,// + b_ay,
+                                                              2*(q2*q3+q1*q0)*9.81,// + b_ay,
                                                     (-q1*q1-q2*q2+q3*q3+q0*q0)*9.81,//+ b_az,
-                0.13,//(q1*q1-q2*q2-q3*q3+q0*q0)*hx_ + 2*(q1*q2+q3*q0)*hy_ + 2*(q1*q3-q2*q0)*hz_,
-                0.2,//2*(q1*q2-q3*q0)*hx_ + (-q1*q1+q2*q2-q3*q3+q0*q0)*hy_ + 2*(q2*q3+q1*q0)*hz_,
-                0.1;//2*(q1*q3+q2*q0)*hx_ + 2*(q2*q3-q1*q0)*hy_ + (-q1*q1-q2*q2+q3*q3+q0*q0)*hz_;
+                (q1*q1-q2*q2-q3*q3+q0*q0)*hx_ + 2*(q1*q2+q3*q0)*hy_ + 2*(q1*q3-q2*q0)*hz_ ,
+                2*(q1*q2-q3*q0)*hx_ + (-q1*q1+q2*q2-q3*q3+q0*q0)*hy_ + 2*(q2*q3+q1*q0)*hz_,
+                2*(q1*q3+q2*q0)*hx_ + 2*(q2*q3-q1*q0)*hy_ + (-q1*q1-q2*q2+q3*q3+q0*q0)*hz_;
 
 
    ROS_INFO("ROTATED H: %f,%f,%f", Z_est(0), Z_est(1), Z_est(2));
  
      Eigen::Matrix<float, 6, 1>   Z_meas, fields;
-     Z_meas << ax, ay, az, 0.13,0.2,0.1;//mx, my, mz;
+     Z_meas << ax, ay, az, mx, my, mz;
 
     
     std::cout << "Z_est" << Z_est << std::endl;
@@ -371,7 +419,7 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
     //Eigen::Vector3f Error_vec;
     Eigen::Matrix<float, 6, 1> Error_vec;
 
-  if (isnan(mx))
+  if (isnan(mx) || fabs(m_norm - 0.52) > 0.2)
   {
     Error_vec << ax - Z_est(0),
                  ay - Z_est(1),
@@ -386,7 +434,7 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
    
     // Update State and Covariance  
     X.noalias() += K * Error_vec;
-    
+ */   
   /*
     if ( fabs(q - q_prev_)> threshold_a_ || fabs(q-b_gy_)>0.1 || fabs(ay - ay_prev_) > threshold_a_ || fabs(ax) > 1)
       X(4) = b_ax;
@@ -398,9 +446,9 @@ ROS_INFO("norm, dt, c, s: %f,%f,%f,%f", w_norm, dt,c,s);
    ax_prev_ = ax; 
    ay_prev_ = ay;
    az_prev_ = az;  
- 
+
     P.noalias() -= K*(H*P);
-  */  
+  */   
    //}   
   
     //std::cout << "P" << P << std::endl;
