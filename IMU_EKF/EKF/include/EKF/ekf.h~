@@ -18,7 +18,7 @@
 #include <EKF/EXTERNAL/eigen3/Eigen/LU>
 
 const double kGravity= 9.81;
-const double Deviation = 10.18;  
+const double Deviation = 1.18;  
 const double kAngularVelocityThreshold = 0.2;
 const double kAccelerationThreshold = 0.3;
 const double kDeltaAngularVelocityThreshold = 0.002;

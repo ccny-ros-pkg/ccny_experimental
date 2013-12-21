@@ -18,7 +18,7 @@
 #include <EKF/EXTERNAL/eigen3/Eigen/LU>
 
 const double kGravity= 9.81;
-const double Deviation = 0.18;  
+const double Deviation = 1.18;  
 const double kAngularVelocityThreshold = 0.2;
 const double kAccelerationThreshold = 0.3;
 const double kDeltaAngularVelocityThreshold = 0.002;
@@ -174,6 +174,7 @@ class EKF
                            double mx, double my, double mz);
     void correctionNoMag(double ax, double ay, double az);
     double getInclination(double ax, double ay, double az, double mx, double my, double mz);
+    void getReferenceField(double mx, double my, double mz);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
     void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
 

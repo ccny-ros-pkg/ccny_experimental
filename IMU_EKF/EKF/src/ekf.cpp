@@ -265,7 +265,7 @@ void EKF::imuMagCallback(
     yaw_g_ = yaw;
 
     h_norm_ = sqrt(hx_*hx_ + hy_*hy_ + hz_*hz_);
-    if(0) {
+    if(1) {
       hx_ /= h_norm_;
       hy_ /= h_norm_;
       hz_ /= h_norm_;
@@ -293,6 +293,8 @@ void EKF::imuMagCallback(
   else
   {
     // determine dt: either constant, or from IMU timestamp
+    if (isnan(mx) || isnan(my) || isnan(mz))
+      return;  
     double dt;
     if (constant_dt_ > 0.0)
   	  dt = constant_dt_;
@@ -304,11 +306,21 @@ void EKF::imuMagCallback(
     
     if (do_bias_estimation_)
       updateBiases(ax, ay, az, p, q, r);
+
     prediction(p - b_gx_, q - b_gy_, r - b_gz_, dt);
-    
-    
+   if (isnan(mx) || isnan(my) || isnan(mz))
+    {
+      ROS_INFO("Correction (no mag)"); 
+      correctionNoMag(ax, ay, az);
+    }
+    else 
+    {
+      ROS_INFO("Correction (with mag)");         
+      correctionWithMag(ax, ay, az, mx, my, mz);
+    }
+/*
     if (isnan(mx) || isnan(my) || isnan(mz))
-   {
+    {
       ROS_INFO("Correction (no mag)"); 
       correctionNoMag(ax, ay, az);
     }
@@ -317,21 +329,21 @@ void EKF::imuMagCallback(
       double thetaDip_est = getInclination(ax, ay, az, mx, my, mz);
       double thetaDip_true = acos(gravity_vec_.dot(magnetic_vec_)/(h_norm_*kGravity));
       double m_norm = sqrt(mx * mx + my * my + mz * mz); 
-      if (fabs(thetaDip_est - thetaDip_true) < Deviation && fabs(m_norm - 0.52) < 0.1)
+      if (fabs(thetaDip_est - thetaDip_true) < Deviation && fabs(m_norm - 0.52) < 1.1)
       {
         ROS_INFO("Correction (with mag)");         
         correctionWithMag(ax, ay, az, mx, my, mz);
       }      
       else
       {
+        ROS_INFO("Correction (no mag)");         
         correctionNoMag(ax, ay, az);
-        ROS_INFO("Correction (no mag)"); 
       } 
-    }
+    }*/
     mx_ = mx; my_ = my; mz_ = mz;
     publishFilteredMsg(imu_msg_raw);
-   
-  } 
+    
+  }
 }
 
 void EKF::updateBiases(double ax, double ay, double az, double p, double q, double r) 
@@ -444,13 +456,23 @@ void EKF::correctionWithMag(double ax, double ay, double az,
   Eigen::Matrix<double, 4, 6> K;  // Kalman gain
   Eigen::Matrix<double, 6, 6> R;
   Eigen::Matrix<double, 6, 1> Z_est;
-
+  
+  double m_norm = sqrt(mx*mx + my*my + mz*mz);
+  if(0) {
+    mx /= m_norm;
+    my /= m_norm;
+    mz /= m_norm;
+  }
+  getReferenceField(mx,my,mz);
   Z_est << 2*(q1_*q3_-q2_*q4_)*kGravity,
            2*(q2_*q3_+q1_*q4_)*kGravity,
            (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*kGravity,
            (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*hx_ + 2*(q1_*q2_ + q3_*q4_)*hy_ + 2*(q1_*q3_ - q2_*q4_)*hz_ ,
            2*(q1_*q2_ - q3_*q4_)*hx_ + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*hy_ + 2*(q2_*q3_ + q1_*q4_)*hz_,
            2*(q1_*q3_ + q2_*q4_)*hx_ + 2*(q2_*q3_ - q1_*q4_)*hy_ + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*hz_;
+  
+ 
+ 
   
   //  Jacobian matrix (H) of Z_est.
   H << kGravity*2*q3_,                -kGravity*2*q4_,                 kGravity*2*q1_,                -kGravity*2*q2_,  
@@ -471,15 +493,10 @@ void EKF::correctionWithMag(double ax, double ay, double az,
   
   Eigen::Matrix<double, 6, 1> Error_vec;
 
-  double m_norm = sqrt(mx*mx + my*my + mz*mz);
+  
   //ROS_INFO("MAG_NORM: %f", m_norm);
   //ROS_INFO("H_NORM: %f", h_norm_);
-
-  if(1) {
-    mx /= m_norm;
-    my /= m_norm;
-    mz /= m_norm;
-  }
+  
   Eigen::Matrix<double, 6, 1>  Z_meas;
   Z_meas << ax, ay, az, mx, my, mz;
 
@@ -504,6 +521,80 @@ void EKF::correctionWithMag(double ax, double ay, double az,
   std::cout << "P" << P_ << std::endl;
 }
 
+void EKF::getReferenceField(double mx, double my, double mz)
+{
+  Eigen::Vector3d h_ref;
+    
+  h_ref << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz,
+           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
+           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
+
+  //h_ref /= h_ref.norm();
+  hx_ = sqrt(h_ref(0)*h_ref(0) + h_ref(1)*h_ref(1));
+  hy_ = 0;
+  hz_ = h_ref(2); 
+}
+/*
+void EKF::correctionWithMag(double ax, double ay, double az,
+  double mx, double my, double mz)
+{
+  Eigen::Vector3d Z_est, Z_meas, Error_vec;
+  Eigen::Matrix<double, 3, 3> S;
+  Eigen::Matrix<double, 3, 4> H;
+  Eigen::Matrix<double, 4, 3> K;
+  Eigen::Matrix<double, 4, 4> I4;
+  ROS_INFO("q: %f,%f,%f,%f", q1_, q2_,q3_,q4_);
+
+  Z_est << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*hx_ + 2*(q1_*q2_ + q3_*q4_)*hy_ + 2*(q1_*q3_ - q2_*q4_)*hz_ ,
+           2*(q1_*q2_ - q3_*q4_)*hx_ + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*hy_ + 2*(q2_*q3_ + q1_*q4_)*hz_,
+           2*(q1_*q3_ + q2_*q4_)*hx_ + 2*(q2_*q3_ - q1_*q4_)*hy_ + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*hz_;
+  std::cout << "Z_est:" << std::endl << Z_est << std::endl;
+  H << 2*q1_*hx_+2*q2_*hy_+2*q3_*hz_, -2*q2_*hx_+2*q1_*hy_-2*q4_*hz_, -2*q3_*hx_+2*q4_*hy_+2*q1_*hz_,  2*q4_*hx_+2*q3_*hy_-2*q2_*hz_,  
+       2*q2_*hx_-2*q1_*hy_+2*q4_*hz_,  2*q1_*hx_+2*q2_*hy_+2*q3_*hz_, -2*q4_*hx_-2*q3_*hy_+2*q2_*hz_, -2*q3_*hx_+2*q4_*hy_+2*q1_*hz_,    
+       2*q3_*hx_-2*q4_*hy_-2*q1_*hz_,  2*q4_*hx_+2*q3_*hy_-2*q2_*hz_,  2*q1_*hx_+2*q2_*hy_+2*q3_*hz_,  2*q2_*hx_-2*q1_*hy_+2*q4_*hz_;
+  std::cout << "H" << H << std::endl;
+double m_norm = sqrt(mx*mx + my*my + mz*mz);
+  if(1) {
+    mx /= m_norm;
+    my /= m_norm;
+    mz /= m_norm;
+  }
+ROS_INFO("m_norm: %f", m_norm);
+  Z_meas << mx, my, mz;
+  std::cout << "Z_meas" << std::endl << Z_meas << std::endl;
+  Error_vec = Z_meas - Z_est;
+  std::cout << "ERROR:" << std::endl << Error_vec << std::endl;
+  std::cout << "Ppr" << std::endl << P_ << std::endl;
+  std::cout << "Sigma_h" << std::endl << Sigma_h_ << std::endl;
+  S = (H*P_*H.transpose()) + Sigma_h_;
+  
+  Eigen::Matrix<double, 3, 3> S_inv, S_inv_lu;
+  Eigen::Matrix<double, 3, 3> I3;
+  I3 = Eigen::MatrixXd::Identity(3, 3);
+  S_inv = S.inverse();//S.lu().solve(I3);
+  S_inv_lu = S.lu().solve(I3);
+  std::cout << "Sinv:" << std::endl << Sinv << std::endl;
+  std::cout << "Sinv_lu:" << std::endl << S_inv_lu<< std::endl;
+  ROS_INFO("q: %f,%f,%f,%f", q1_, q2_,q3_,q4_); 
+  K = P_*H.transpose()*S_inv;
+ 
+  std::cout << "K:" << std::endl << K << std::endl;
+  X_ += K * Error_vec;
+  P_ -=  K * H * P_;
+  std::cout << "P" << P_ << std::endl;
+  q1_ = X_(0); q2_ = X_(1); q3_ = X_(2); q4_ = X_(3);
+  ROS_INFO("q: %f,%f,%f,%f", q1_, q2_,q3_,q4_);
+  // Re-normalize quaternion
+  double norm = sqrt(q1_*q1_ + q2_*q2_ + q3_*q3_ + q4_*q4_);
+  q1_ /= norm;
+  q2_ /= norm;
+  q3_ /= norm;
+  q4_ /= norm;
+  ROS_INFO("q: %f,%f,%f,%f", q1_, q2_,q3_,q4_);
+  ax_ = ax; ay_ = ay; az_ = az;
+   
+}
+*/
 void EKF::correctionNoMag(double ax, double ay, double az)
 {
   Eigen::Vector3d Z_est, Z_meas, Error_vec;
@@ -530,12 +621,12 @@ void EKF::correctionNoMag(double ax, double ay, double az)
 
   Error_vec = Z_meas - Z_est;
 
-  S = (H*P_*H.transpose()) + Sigma_a_;
+  S = (H*(P_*H.transpose())) + Sigma_a_;
   
-  K = P_*H.transpose()*S.inverse();
+  K = P_*(H.transpose()*(S.inverse()));
 
   X_ += K * Error_vec;
-  P_ -=  K * H * P_;
+  P_ -= K * H * P_;
 
   q1_ = X_(0); q2_ = X_(1); q3_ = X_(2); q4_ = X_(3);
   
