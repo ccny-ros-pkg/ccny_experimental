@@ -1,8 +1,0 @@
-<!-- EKF nodelet publisher -->
-<library path="lib/libekf_nodelet">
-  <class name="EKF/EKFNodelet" type="EKFNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Quaternion based Extended Kalman Filter.
-    </description>
-  </class>
-</library>
