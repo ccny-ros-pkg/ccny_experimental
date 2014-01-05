@@ -1,2 +1,0 @@
-- setup-file:
-    local-name: /home/roberto/ros/ccny-ros-pkg/ccny_experimental/IMU_EKF/KF/build/devel/setup.sh
