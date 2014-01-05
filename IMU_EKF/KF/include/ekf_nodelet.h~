@@ -1,0 +1,18 @@
+#ifndef NIAC_NIAC_NODELET_H
+#define NIAC_NIAC_NODELET_H
+
+#include <nodelet/nodelet.h>
+#include <pluginlib/class_list_macros.h>
+
+#include "NIAC/niac.h"
+
+class NIACNodelet : public nodelet::Nodelet
+{
+  public:
+    virtual void onInit();
+
+  private:
+      NIAC * niac_;  // FIXME: change to smart pointer
+};
+
+#endif // NIAC_NIAC_NODELET_H

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Householder
+END
+BlockHouseholder.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Householder/BlockHouseholder.h
+END
+Householder.h
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Householder/Householder.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Householder/CMakeLists.txt
+END
+HouseholderSequence.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Householder/HouseholderSequence.h
+END

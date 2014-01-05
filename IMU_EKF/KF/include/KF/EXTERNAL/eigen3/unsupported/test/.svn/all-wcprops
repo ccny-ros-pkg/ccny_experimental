@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test
+END
+FFTW.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/FFTW.cpp
+END
+forward_adolc.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/forward_adolc.cpp
+END
+sparse_llt.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/sparse_llt.cpp
+END
+NumericalDiff.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/NumericalDiff.cpp
+END
+alignedvector3.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/alignedvector3.cpp
+END
+matrix_function.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/matrix_function.cpp
+END
+matrix_exponential.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/matrix_exponential.cpp
+END
+sparse_ldlt.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/sparse_ldlt.cpp
+END
+mpreal_support.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/mpreal_support.cpp
+END
+polynomialsolver.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/polynomialsolver.cpp
+END
+BVH.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/BVH.cpp
+END
+FFT.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/FFT.cpp
+END
+mpreal.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/mpreal.cpp
+END
+openglsupport.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/openglsupport.cpp
+END
+mpreal.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/mpreal.h
+END
+NonLinearOptimization.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/NonLinearOptimization.cpp
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/CMakeLists.txt
+END
+sparse_lu.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/unsupported/test/sparse_lu.cpp
+END
+sparse_extra.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/sparse_extra.cpp
+END
+autodiff.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/autodiff.cpp
+END
+polynomialutils.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/unsupported/test/polynomialutils.cpp
+END

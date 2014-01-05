@@ -1,0 +1,59 @@
+<!-- ekf launch file -->
+<launch>
+
+#### Lunch Phidgets_driver ###########################################################
+
+  <node pkg="nodelet" type="nodelet" name="PhidgetsImuNodelet" 
+    args="load phidgets_imu/PhidgetsImuNodelet imu_manager" 
+    output="screen">
+
+   # supported data rates: 4 8 16 24 32 40 ... 1000 (in ms)
+    <param name="period" value="4"/>
+    
+  </node>
+
+#### launch EKF ###############################################
+  
+	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+
+    <param name="do_bias_estimation" value="true"/>
+    <param name="use_mag"      value="true"/>
+    <param name="sigma_gx"     value="0.001"/>
+    <param name="sigma_gy"     value="0.001"/>
+    <param name="sigma_gz"     value="0.001"/>  
+    
+    <param name="sigma_ax"     value="0.003"/>
+    <param name="sigma_ay"     value="0.003"/>
+    <param name="sigma_az"     value="0.003"/>
+    
+    <param name="sigma_hx"     value="0.0001"/>
+    <param name="sigma_hy"     value="0.0001"/>
+    <param name="sigma_hz"     value="0.0001"/>
+    
+    <param name="hx"              value="0.199791"/>
+    <param name="hy"              value="0.046448"/>
+    <param name="hz"              value="-0.478926"/>
+  
+    
+    <param name="alpha"                 value="0.001"/>
+    
+  </node>
+
+#### IMU Madqwick Orientation Filter#######################################
+
+
+  <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
+    args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
+    output="screen">
+
+    <param name="use_mag" value="true"/>
+    <param name="gain" value="0.1"/>
+    <remap from="imu/data" to="imu/data_madgwick"/>
+  </node>
+
+#### Nodelet manager ######################################################
+
+  <node pkg="nodelet" type="nodelet" name="imu_manager"
+    args="manager" output="screen" />
+
+</launch>

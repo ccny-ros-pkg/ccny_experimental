@@ -1,0 +1,50 @@
+<!-- ekf launch file -->
+<launch>
+
+#### launch xsens_driver ###############################################
+
+  
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+    <remap from="imu/data" to="imu/data_raw"/>
+    <remap from="/magnetic" to="imu/mag"/>
+	</node> 
+
+#### launch EKF ###############################################
+
+  <node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+
+  <param name="use_mag"      value="true"/>
+
+	<param name="sigma_gx"     value="0.001"/>
+  <param name="sigma_gy"     value="0.001"/>
+  <param name="sigma_gz"     value="0.001"/>  
+
+  <param name="sigma_ax"     value="0.008"/>
+  <param name="sigma_ay"     value="0.008"/>
+  <param name="sigma_az"     value="0.008"/>
+
+  
+  <param name="sigma_hx"     value="0.001"/>
+  <param name="sigma_hy"     value="0.001"/>
+  <param name="sigma_hz"     value="0.001"/>
+  
+  <param name="sigma_bax"              value="0.00000000"/>
+  <param name="sigma_bay"              value="0.00000000"/>
+  <param name="sigma_baz"              value="0.0000000"/>
+  
+  <param name="hx"              value="0.1"/>#"0.199791"/>
+  <param name="hy"              value="-0.001"/>#"0.046448"/>
+  <param name="hz"              value="-0.5"/>#-0.478926"/>
+  
+  <param name="threshold_gyro_step"   value="0.01"/>
+  <param name="threshold_acc_step"    value="0.1"/>
+  <param name="alpha"                 value="0.007"/>
+  </node>
+
+#### Nodelet manager ######################################################
+
+  <node pkg="nodelet" type="nodelet" name="imu_manager"
+    args="manager" output="screen" />
+
+</launch>

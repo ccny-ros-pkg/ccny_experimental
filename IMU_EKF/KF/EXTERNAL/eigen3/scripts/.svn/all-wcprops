@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/scripts
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/CMakeLists.txt
+END
+eigen_gen_credits.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/eigen_gen_credits.cpp
+END
+check.in
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/check.in
+END
+release.in
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/release.in
+END
+buildtests.in
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/buildtests.in
+END
+eigen_gen_docs
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/scripts/eigen_gen_docs
+END
+debug.in
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/scripts/debug.in
+END

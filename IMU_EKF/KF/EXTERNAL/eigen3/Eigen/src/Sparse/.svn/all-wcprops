@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Sparse
+END
+SparseUtil.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseUtil.h
+END
+AmbiVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/AmbiVector.h
+END
+SparseTranspose.h
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseTranspose.h
+END
+SparseCwiseBinaryOp.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseCwiseBinaryOp.h
+END
+SparseDiagonalProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseDiagonalProduct.h
+END
+SparseProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseProduct.h
+END
+SparseAssign.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseAssign.h
+END
+TriangularSolver.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/TriangularSolver.h
+END
+SparseDot.h
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseDot.h
+END
+SparseRedux.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseRedux.h
+END
+SparseFuzzy.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseFuzzy.h
+END
+SparseCwiseUnaryOp.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseCwiseUnaryOp.h
+END
+SparseBlock.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseBlock.h
+END
+MappedSparseMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/MappedSparseMatrix.h
+END
+SparseSelfAdjointView.h
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseSelfAdjointView.h
+END
+SparseSparseProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseSparseProduct.h
+END
+SparseMatrixBase.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseMatrixBase.h
+END
+SparseDenseProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseDenseProduct.h
+END
+SparseVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseVector.h
+END
+SparseTriangularView.h
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseTriangularView.h
+END
+SparseMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseMatrix.h
+END
+CoreIterators.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/CoreIterators.h
+END
+DynamicSparseMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/DynamicSparseMatrix.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/CMakeLists.txt
+END
+SparseView.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/SparseView.h
+END
+CompressedStorage.h
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Sparse/CompressedStorage.h
+END

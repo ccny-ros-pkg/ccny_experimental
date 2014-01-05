@@ -1,0 +1,14 @@
+#include "NIAC/niac_nodelet.h"
+
+PLUGINLIB_DECLARE_CLASS(NIAC, NIACNodelet, NIACNodelet, nodelet::Nodelet);
+
+void NIACNodelet::onInit()
+{
+  NODELET_INFO("Initializing NIAC Nodelet");
+  
+  // TODO: Do we want the single threaded or multithreaded NH?
+  ros::NodeHandle nh         = getMTNodeHandle();
+  ros::NodeHandle nh_private = getMTPrivateNodeHandle();
+
+  niac_ = new NIAC(nh, nh_private);
+}

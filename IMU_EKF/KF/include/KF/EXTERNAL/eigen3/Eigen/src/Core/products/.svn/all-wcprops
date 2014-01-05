@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products
+END
+SelfadjointRank2Update.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h
+END
+SelfadjointProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/SelfadjointProduct.h
+END
+GeneralBlockPanelKernel.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h
+END
+SelfadjointMatrixVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h
+END
+SelfadjointMatrixMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h
+END
+TriangularMatrixVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/TriangularMatrixVector.h
+END
+GeneralMatrixMatrixTriangular.h
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h
+END
+TriangularMatrixMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h
+END
+CoeffBasedProduct.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/CoeffBasedProduct.h
+END
+GeneralMatrixVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/GeneralMatrixVector.h
+END
+TriangularSolverVector.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/TriangularSolverVector.h
+END
+Parallelizer.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/Parallelizer.h
+END
+GeneralMatrixMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/CMakeLists.txt
+END
+TriangularSolverMatrix.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h
+END

@@ -1,0 +1,25 @@
+<package>
+  <description brief="KF">
+
+     KF
+
+  </description>
+  <author>rvalenti</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/KF</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="nodelet"/>
+  <depend package="geometry_msgs"/>
+  <depend package="tf"/>
+  <depend package="message_filters"/>
+  <depend package="sensor_msgs"/>
+
+<export>
+    <nodelet plugin="${prefix}/kf_nodelet.xml" />
+  </export>
+</package>
+
+
