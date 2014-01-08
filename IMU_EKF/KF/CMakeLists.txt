@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
+# Set the build type. Options are:
+# Coverage : w/ debug symbols, w/o optimization, w/ code-coverage
+# Debug : w/ debug symbols, w/o optimization
+# Release : w/o debug symbols, w/ optimization
+# RelWithDebInfo : w/ debug symbols, w/ optimization
+# MinSizeRel : w/o debug symbols, w/ optimization, stripped binaries
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 
-include_directories({${KF_SOURCE_DIR}/EXTERNAL/eigen3)
-
+#include_directories({${KF_SOURCE_DIR}/EXTERNAL/eigen3)
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
 
 rosbuild_init()
 
@@ -46,4 +47,3 @@ target_link_libraries (kf_nodelet KF)
 # create niac_node library
 rosbuild_add_executable(kf_node src/kf_node.cpp)
 target_link_libraries (kf_node KF)
-

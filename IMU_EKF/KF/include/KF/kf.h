@@ -14,8 +14,8 @@
 #include <message_filters/sync_policies/approximate_time.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Header.h>
-#include <KF/EXTERNAL/eigen3/Eigen/Eigen>
-#include <KF/EXTERNAL/eigen3/Eigen/LU>
+#include <Eigen/LU>
+#include <Eigen/Eigen>
 
 const double kGravity= 9.81;
 const double Deviation = 1.18;  

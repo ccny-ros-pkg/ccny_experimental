@@ -1,7 +1,5 @@
 
 #include "KF/kf.h"
-#include <KF/EXTERNAL/eigen3/Eigen/Eigen>
-#include <KF/EXTERNAL/eigen3/Eigen/LU>
 #include <iostream>
 
 KF::KF(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
@@ -464,24 +462,7 @@ void KF::correctionWithMag(double ax, double ay, double az,
     mz /= m_norm;
   }
   getReferenceField(mx,my,mz);
-  Z_est << 2*(q1_*q3_-q2_*q4_)*kGravity,
-           2*(q2_*q3_+q1_*q4_)*kGravity,
-           (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*kGravity,
-           (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*hx_ + 2*(q1_*q2_ + q3_*q4_)*hy_ + 2*(q1_*q3_ - q2_*q4_)*hz_ ,
-           2*(q1_*q2_ - q3_*q4_)*hx_ + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*hy_ + 2*(q2_*q3_ + q1_*q4_)*hz_,
-           2*(q1_*q3_ + q2_*q4_)*hx_ + 2*(q2_*q3_ - q1_*q4_)*hy_ + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*hz_;
   
- 
- 
-  
-  //  Jacobian matrix (H) of Z_est.
-  H << kGravity*2*q3_,                -kGravity*2*q4_,                 kGravity*2*q1_,                -kGravity*2*q2_,  
-       kGravity*2*q4_,                 kGravity*2*q3_,                 kGravity*2*q2_,                 kGravity*2*q1_,  
-      -kGravity*2*q1_,                -kGravity*2*q2_,                 kGravity*2*q3_,                 kGravity*2*q4_,  
-       2*q1_*hx_+2*q2_*hy_+2*q3_*hz_, -2*q2_*hx_+2*q1_*hy_-2*q4_*hz_, -2*q3_*hx_+2*q4_*hy_+2*q1_*hz_,  2*q4_*hx_+2*q3_*hy_-2*q2_*hz_,  
-       2*q2_*hx_-2*q1_*hy_+2*q4_*hz_,  2*q1_*hx_+2*q2_*hy_+2*q3_*hz_, -2*q4_*hx_-2*q3_*hy_+2*q2_*hz_, -2*q3_*hx_+2*q4_*hy_+2*q1_*hz_,    
-       2*q3_*hx_-2*q4_*hy_-2*q1_*hz_,  2*q4_*hx_+2*q3_*hy_-2*q2_*hz_,  2*q1_*hx_+2*q2_*hy_+2*q3_*hz_,  2*q2_*hx_-2*q1_*hy_+2*q4_*hz_;
-
   R = Eigen::MatrixXd::Zero(6, 6);
   R.block<3, 3>(0, 0) = Sigma_a_; 
   R.block<3, 3>(3, 3) = Sigma_h_; 
@@ -524,16 +505,15 @@ void KF::correctionWithMag(double ax, double ay, double az,
 
   Eigen::Vector3d l;
 
-	l << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz ,
-           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
-           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
+	l << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz,
+       2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
+       2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
 
-  
-	double q1m, q2m, q3m, q4m;
+ 	double q1m, q2m, q3m, q4m;
 	double gamma = l(0)*l(0) + l(1)*l(1);	
 	double sq_gamma = sqrt(gamma);	
 	double den = sqrt(2*(gamma-l(0)*sq_gamma));
-	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(-l(0)*sq_gamma)+gamma));
+	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(gamma-l(0)*sq_gamma)));
 	q1m = 0;
 	q2m = 0;
 	if (isnan(den)) 
@@ -543,7 +523,7 @@ void KF::correctionWithMag(double ax, double ay, double az,
 	}
 	else
 	{
-		q3m = -sqrt(-l(0)*sq_gamma + gamma)/(sqrt(2*gamma));
+		q3m = -(sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
 		q4m = l(1)/den;
 		double qm_norm = sqrt(q3m*q3m + q4m*q4m);
   	q3m /= qm_norm;
@@ -554,7 +534,8 @@ void KF::correctionWithMag(double ax, double ay, double az,
 	//q3_ = q4_*q3m + q3_*q3m + q1_*q2m - q2_*q1m;
 	//q4_ = q4_*q4m - q1_*q1m - q2_*q2m - q3_*q3m;
   q1_ = 0; q2_ = 0; q3_=q3m; q4_ = q4m; 
-  ax_ = ax; ay_ = ay; az_ = az;
+    
+	ax_ = ax; ay_ = ay; az_ = az;
   ROS_INFO("lx, ly, gamma, den: %f %f %f %f", l(0), l(1), gamma, den);
 	ROS_INFO("q3m, q4m: %f %f", q3m, q4m);
   //std::cout << "Z_est:" << std::endl << Z_est << std::endl;
