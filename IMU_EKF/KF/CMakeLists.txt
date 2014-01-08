@@ -7,10 +7,8 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 # Release : w/o debug symbols, w/ optimization
 # RelWithDebInfo : w/ debug symbols, w/ optimization
 # MinSizeRel : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+set(ROS_BUILD_TYPE RelWithDebInfo)
 
-
-#include_directories({${KF_SOURCE_DIR}/EXTERNAL/eigen3)
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
@@ -20,9 +18,6 @@ rosbuild_init()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-#SET( EKF_EIGEN3_INCLUDE ${g2o_SOURCE_DIR}/EXTERNAL/eigen3 CACHE PATH "Directory of Eigen3")
-#INCLUDE_DIRECTORIES(${g2o_SOURCE_DIR} ${G2O_EIGEN3_INCLUDE})
 
 #uncomment if you have defined messages
 rosbuild_genmsg()

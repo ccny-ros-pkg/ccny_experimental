@@ -68,9 +68,6 @@ class KF
     ros::Publisher yaw_xekf_publisher_;
     ros::Publisher yaw_g_publisher_;
     ros::Publisher yaw_m_publisher_;
-    ros::Publisher bias_ax_publisher_;
-    ros::Publisher bias_ay_publisher_;    
-    ros::Publisher bias_az_publisher_;
     ros::Publisher bias_gx_publisher_;
     ros::Publisher bias_gy_publisher_;    
     ros::Publisher bias_gz_publisher_;
@@ -155,7 +152,6 @@ class KF
     bool vo_data_;
 
     double q1_, q2_, q3_, q4_;  // quaternion
-    double b_ax, b_ay, b_az; // acceleration bias
     double b_gx_, b_gy_, b_gz_; // gyroscope bias
     double p_prev_, q_prev_, r_prev_, ax_prev_, ay_prev_, az_prev_ ;     
     double constant_dt_;

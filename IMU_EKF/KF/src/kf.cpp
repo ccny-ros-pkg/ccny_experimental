@@ -25,10 +25,6 @@ KF::KF(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   pitch_xekf_publisher_   = nh_.advertise<std_msgs::Float32>("pitch_xekf", queue_size);
   yaw_xekf_publisher_     = nh_.advertise<std_msgs::Float32>("yaw_xekf", queue_size);
 
-  bias_ax_publisher_     = nh_.advertise<std_msgs::Float32>("bias_ax", queue_size);
-  bias_ay_publisher_     = nh_.advertise<std_msgs::Float32>("bias_ay", queue_size);
-  bias_az_publisher_     = nh_.advertise<std_msgs::Float32>("bias_az", queue_size);
-
   bias_gx_publisher_     = nh_.advertise<std_msgs::Float32>("bias_gx", queue_size);
   bias_gy_publisher_     = nh_.advertise<std_msgs::Float32>("bias_gy", queue_size);
   bias_gz_publisher_     = nh_.advertise<std_msgs::Float32>("bias_gz", queue_size);
@@ -516,19 +512,27 @@ void KF::correctionWithMag(double ax, double ay, double az,
 	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(gamma-l(0)*sq_gamma)));
 	q1m = 0;
 	q2m = 0;
-	if (isnan(den)) 
-	{
-			q3m = 0;
-			q4m = 1;
-	}
-	else
-	{
-		q3m = -(sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
-		q4m = l(1)/den;
-		double qm_norm = sqrt(q3m*q3m + q4m*q4m);
-  	q3m /= qm_norm;
-  	q4m /= qm_norm;
-	}
+  if (l(1) > 0)
+  {
+	    q3m = -(sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
+	    q4m = l(1)/den;
+      double qm_norm = sqrt(q3m*q3m + q4m*q4m);
+      q3m /= qm_norm;
+  	  q4m /= qm_norm;
+  }
+  else if (l(1) < 0)
+  {
+      q3m = (sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
+	    q4m = -l(1)/den;
+      double qm_norm = sqrt(q3m*q3m + q4m*q4m);
+      q3m /= qm_norm;
+  	  q4m /= qm_norm;
+   }
+   else if (l(1) = 0) 
+   { 
+		q3m = 1;
+  	q4m = 0;
+  	}
 	//q1_ = q4_*q1m + q1_*q4m + q2_*q3m - q3_*q2m;
 	//q2_ = q4_*q2m + q2_*q4m + q3_*q1m - q1_*q3m;
 	//q3_ = q4_*q3m + q3_*q3m + q1_*q2m - q2_*q1m;
@@ -749,10 +753,6 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   yaw_ekf_publisher_.publish(yaw_msg);
   yaw_g_publisher_.publish(yaw_g_msg);
   yaw_m_publisher_.publish(yaw_m_msg);  
-  
-  bias_ax_publisher_.publish(bias_ax_msg);
-  bias_ay_publisher_.publish(bias_ay_msg);  
-  bias_az_publisher_.publish(bias_az_msg);
   
   bias_gx_publisher_.publish(bias_gx_msg);
   bias_gy_publisher_.publish(bias_gy_msg);  
