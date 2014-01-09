@@ -35,10 +35,10 @@ rosbuild_genmsg()
 #common commands for building c++ executables and libraries
 rosbuild_add_library(KF src/kf.cpp)
 
-# create niac_nodelet library
+# create kf_nodelet library
 rosbuild_add_library (kf_nodelet src/kf_nodelet.cpp)
 target_link_libraries (kf_nodelet KF)
 
-# create niac_node library
+# create kf_node library
 rosbuild_add_executable(kf_node src/kf_node.cpp)
 target_link_libraries (kf_node KF)

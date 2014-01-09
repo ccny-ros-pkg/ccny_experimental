@@ -171,6 +171,8 @@ class KF
     void correctionNoMag(double ax, double ay, double az);
     double getInclination(double ax, double ay, double az, double mx, double my, double mz);
     void getReferenceField(double mx, double my, double mz);
+    void getOrientation(double ax, double ay, double az, double mx, double my, double mz, 
+                         double& q1, double& q2, double& q3, double& q4);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
     void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
 

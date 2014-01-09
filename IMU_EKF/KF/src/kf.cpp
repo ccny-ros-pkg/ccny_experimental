@@ -487,65 +487,96 @@ void KF::correctionWithMag(double ax, double ay, double az,
   ax /= a_norm;
 	ay /= a_norm;
 	az /= a_norm;
-	q4_ = sqrt((az + 1)*0.5);	
-	q1_ = ay/(2*q4_);
-	q2_ = -ax/(2*q4_);
-	q3_ =0;
-	double norm = sqrt(q1_*q1_ + q2_*q2_ + q3_*q3_ + q4_*q4_);
-  q1_ /= norm;
-  q2_ /= norm;
-  q3_ /= norm;
-  q4_ /= norm;
-	Eigen::Vector3d m;
-	m << mx, my, mz;
-
-  Eigen::Vector3d l;
-
-	l << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz,
-       2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
-       2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
-
- 	double q1m, q2m, q3m, q4m;
-	double gamma = l(0)*l(0) + l(1)*l(1);	
-	double sq_gamma = sqrt(gamma);	
-	double den = sqrt(2*(gamma-l(0)*sq_gamma));
-	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(gamma-l(0)*sq_gamma)));
-	q1m = 0;
-	q2m = 0;
-  if (l(1) > 0)
-  {
-	    q3m = -(sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
-	    q4m = l(1)/den;
-      double qm_norm = sqrt(q3m*q3m + q4m*q4m);
-      q3m /= qm_norm;
-  	  q4m /= qm_norm;
-  }
-  else if (l(1) < 0)
-  {
-      q3m = (sqrt(gamma-l(0)*sq_gamma))/(sqrt(2*gamma));
-	    q4m = -l(1)/den;
-      double qm_norm = sqrt(q3m*q3m + q4m*q4m);
-      q3m /= qm_norm;
-  	  q4m /= qm_norm;
-   }
-   else if (l(1) = 0) 
-   { 
-		q3m = 1;
-  	q4m = 0;
-  	}
-	//q1_ = q4_*q1m + q1_*q4m + q2_*q3m - q3_*q2m;
-	//q2_ = q4_*q2m + q2_*q4m + q3_*q1m - q1_*q3m;
-	//q3_ = q4_*q3m + q3_*q3m + q1_*q2m - q2_*q1m;
-	//q4_ = q4_*q4m - q1_*q1m - q2_*q2m - q3_*q3m;
-  q1_ = 0; q2_ = 0; q3_=q3m; q4_ = q4m; 
-    
+  double q1_meas; 
+  double q2_meas;
+  double q3_meas;
+  double q4_meas;
+  getOrientation(ax, ay, az, mx, my, mz, q1_meas, q2_meas, q3_meas, q4_meas);
+  q1_ = q1_meas;
+  q2_ = q2_meas;
+  q3_ = q3_meas;
+  q4_ = q4_meas;
 	ax_ = ax; ay_ = ay; az_ = az;
-  ROS_INFO("lx, ly, gamma, den: %f %f %f %f", l(0), l(1), gamma, den);
-	ROS_INFO("q3m, q4m: %f %f", q3m, q4m);
+  
   //std::cout << "Z_est:" << std::endl << Z_est << std::endl;
   //std::cout << "Z_meas" << std::endl << Z_meas << std::endl;
   //std::cout << "K:" << std::endl << K << std::endl;
   //std::cout << "P" << P_ << std::endl;
+}
+
+void KF::getOrientation(double ax, double ay, double az, double mx, double my, double mz, 
+                        double & q1, double & q2, double & q3, double & q4)
+{
+
+// q_ acc is the quaternion obtained from the acceleration vector representing the orientation of the Global frame wrt the Local frame with arbitrary yaw (intermediary frame)
+double q1_acc, q2_acc, q3_acc, q4_acc;
+if (az == -1)
+  {
+    q1_acc =-1;
+    q2_acc = 0;
+    q3_acc = 0;
+    q4_acc = 0;
+  }
+  else 
+  {
+	  q4_acc = sqrt((az + 1)*0.5);	
+	  q1_acc = ay/(2*q4_);
+	  q2_acc = -ax/(2*q4_);
+	  q3_acc = 0;
+  }
+ 
+  ROS_INFO("q1, q2, q3, q4, az: %f, %f, %f, %f, %f", q1_acc, q2_acc, q3_acc, q4_acc, az);
+	double q_acc_norm = sqrt(q1_acc*q1_acc + q2_acc*q2_acc + q3_acc*q3_acc + q4_acc*q4_acc);
+  q1_acc /= q_acc_norm;
+  q2_acc /= q_acc_norm;
+  q3_acc /= q_acc_norm;
+  q4_acc /= q_acc_norm;
+	
+  //l: magnetic field vector rotated into the intermediary frame.   
+  double lx, ly, lz;
+	lx = (q1_acc*q1_acc - q2_acc*q2_acc - q3_acc*q3_acc + q4_acc*q4_acc)*mx + 2*(q1_acc*q2_acc - q3_acc*q4_acc)*my + 2*(q1_acc*q3_acc + q2_acc*q4_acc)*mz;
+  ly = 2*(q1_acc*q2_acc + q3_acc*q4_acc)*mx + (-q1_acc*q1_acc + q2_acc*q2_acc - q3_acc*q3_acc + q4_acc*q4_acc)*my + 2*(q2_acc*q3_acc - q1_acc*q4_acc)*mz;
+  lz = 2*(q1_acc*q3_acc - q2_acc*q4_acc)*mx + 2*(q2_acc*q3_acc + q1_*q4_)*my + (-q1_acc*q1_acc - q2_acc*q2_acc + q3_acc*q3_acc + q4_acc*q4_acc)*mz;
+
+  // q_mag is the quaternion that rotates the Global frame (North West Up) into the intermediary frame 
+ 	double q1_mag, q2_mag, q3_mag, q4_mag;
+	double gamma = lx*lx + ly*ly;	
+	double sq_gamma = sqrt(gamma);	
+	double den = sqrt(2*(gamma-lx*sq_gamma));
+	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(gamma-lx*sq_gamma)));
+	q1_mag = 0;
+	q2_mag = 0;
+  if (ly > 0)
+  {
+	    q3_mag = -(sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
+	    q4_mag = ly/den;
+      double q_mag_norm = sqrt(q3_mag*q3_mag + q4_mag*q4_mag);
+      q3_mag /= q_mag_norm;
+  	  q4_mag /= q_mag_norm;
+  }
+  else if (ly < 0)
+  {
+      q3_mag = (sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
+	    q4_mag = -ly/den;
+      double q_mag_norm = sqrt(q3_mag*q3_mag + q4_mag*q4_mag);
+      q3_mag /= q_mag_norm;
+  	  q4_mag /= q_mag_norm;
+   }
+   else if (ly == 0) 
+   { 
+		q3_mag = 1;
+  	q4_mag = 0;
+  	}
+  ROS_INFO("lx, ly, gamma, den: %f %f %f %f", lx, ly, gamma, den);
+	ROS_INFO("q3_mag, q4_mag: %f %f", q3_mag, q4_mag);
+  //the quaternion multiplication between q_acc and q_mag represents the quaternion, orientation of the Global frame wrt the local frame.
+	q1 = q4_acc*q1_mag + q1_acc*q4_mag + q2_acc*q3_mag - q3_acc*q2_mag;
+	q2 = q4_acc*q2_mag + q2_acc*q4_mag + q3_acc*q1_mag - q1_acc*q3_mag;
+	q3 = q4_acc*q3_mag + q3_acc*q4_mag + q1_acc*q2_mag - q2_acc*q1_mag;
+	q4 = q4_acc*q4_mag - q1_acc*q1_mag - q2_acc*q2_mag - q3_acc*q3_mag;
+  
+  //q1 = 0; q2 = 0; q3=q3_mag; q4 = q4_mag; 
+  //q1 = q1_acc; q2 = q2_acc; q3=q3_acc; q4 = q4_acc; 
 }
 
 void KF::getReferenceField(double mx, double my, double mz)
@@ -733,18 +764,11 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   yaw_m_msg.data = yaw_m;
 
   roll_ekf_publisher_.publish(roll_msg);
-  std_msgs::Float32 bias_ax_msg;
-  std_msgs::Float32 bias_ay_msg;
-  std_msgs::Float32 bias_az_msg;
-
+ 
   std_msgs::Float32 bias_gx_msg;
   std_msgs::Float32 bias_gy_msg;
   std_msgs::Float32 bias_gz_msg;
-
-  bias_ax_msg.data = b_ax;
-  bias_ay_msg.data = b_ay;
-  bias_az_msg.data = b_az;
-  
+    
   bias_gx_msg.data = b_gx_;
   bias_gy_msg.data = b_gy_;
   bias_gz_msg.data = b_gz_;
@@ -791,6 +815,7 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 /*
  Eigen::Vector3f Z_est_nomag, Z_meas_nomag, Error_vec_nomag, Z_est_nomag1;
     Eigen::Matrix<float, 3, 3> S_nomag;
+
     Eigen::Matrix<float, 3, 7> H_nomag;
     Eigen::Matrix<float, 7, 3> K_nomag;
      

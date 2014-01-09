@@ -2,7 +2,7 @@
 <launch>
 
 #### Lunch Phidgets_driver ###########################################################
-
+<!--
   <node pkg="nodelet" type="nodelet" name="PhidgetsImuNodelet" 
     args="load phidgets_imu/PhidgetsImuNodelet imu_manager" 
     output="screen">
@@ -11,6 +11,15 @@
     <param name="period" value="4"/>
     
   </node>
+-->
+#### launch xsens_driver ###############################################
+
+  
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+    <remap from="imu/data" to="imu/data_raw"/>
+    <remap from="/magnetic" to="imu/mag"/>
+	</node> 
 
 #### launch KF ###############################################
   
@@ -41,7 +50,7 @@
 
 #### IMU Madqwick Orientation Filter#######################################
 
-<!--
+
   <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
     args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
     output="screen">
@@ -50,7 +59,7 @@
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
   </node>
--->
+
 #### Nodelet manager ######################################################
 
   <node pkg="nodelet" type="nodelet" name="imu_manager"
