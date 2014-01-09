@@ -237,7 +237,8 @@ void KF::imuMagCallback(
     // initialize roll/pitch orientation from acc. vector
 	  double roll  = atan2(ay, sqrt(ax*ax + az*az));
 	  double pitch = atan2(-ax, sqrt(ay*ay + az*az));
-	  double yaw = atan2( (-my*cos(roll) + mz*sin(roll) ) , (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
+	  double yaw = atan2( (-my*cos(roll) + mz*sin(roll) ) , 
+        (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
     tf::Quaternion init_q = tf::createQuaternionFromRPY(roll, pitch, yaw);
     
     //INITIALIZE STATE
@@ -340,7 +341,8 @@ void KF::imuMagCallback(
   }
 }
 
-void KF::updateBiases(double ax, double ay, double az, double p, double q, double r) 
+void KF::updateBiases(double ax, double ay, double az, double p, 
+    double q, double r) 
 {
   float acceleration_magnitude = sqrt(ax*ax + ay*ay + az*az);
   if (fabs(p - p_prev_) < kDeltaAngularVelocityThreshold && 
@@ -359,16 +361,21 @@ void KF::updateBiases(double ax, double ay, double az, double p, double q, doubl
   p_prev_ = p; q_prev_ = q; r_prev_ = r;
 }
 
-double KF::getInclination(double ax, double ay, double az, double mx, double my, double mz)
+double KF::getInclination(double ax, double ay, double az, double mx, 
+    double my, double mz)
 {
   Eigen::Vector3d g_est, h_est;
   g_est << 2*(q1_*q3_+q2_*q4_)*ax,
            2*(q2_*q3_-q1_*q4_)*ay,
            (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*az,
   
-  h_est << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz ,
-           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
-           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
+  h_est << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my
+     + 2*(q1_*q3_ + q2_*q4_)*mz ,
+           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my
+     + 2*(q2_*q3_ - q1_*q4_)*mz,
+           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + 
+     (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
+  
   double m_norm = sqrt(mx*mx + my*my + mz*mz);
   double a_norm = sqrt(ax*ax + ay*ay + az*az);
     
@@ -487,6 +494,7 @@ void KF::correctionWithMag(double ax, double ay, double az,
   ax /= a_norm;
 	ay /= a_norm;
 	az /= a_norm;
+  //acceleration needs to be normalized in order to find the relative quaternion, magnetic field does not have to!
   double q1_meas; 
   double q2_meas;
   double q3_meas;
@@ -504,13 +512,12 @@ void KF::correctionWithMag(double ax, double ay, double az,
   //std::cout << "P" << P_ << std::endl;
 }
 
-void KF::getOrientation(double ax, double ay, double az, double mx, double my, double mz, 
-                        double & q1, double & q2, double & q3, double & q4)
+void KF::getOrientation(double ax, double ay, double az, double mx, double my,
+    double mz, double& q1, double& q2, double& q3, double& q4)
 {
-
-// q_ acc is the quaternion obtained from the acceleration vector representing the orientation of the Global frame wrt the Local frame with arbitrary yaw (intermediary frame)
-double q1_acc, q2_acc, q3_acc, q4_acc;
-if (az == -1)
+  // q_ acc is the quaternion obtained from the acceleration vector representing the orientation of the Global frame wrt the Local frame with arbitrary yaw (intermediary frame)
+  double q1_acc, q2_acc, q3_acc, q4_acc;
+  if (az == -1)
   {
     q1_acc =-1;
     q2_acc = 0;
@@ -524,68 +531,69 @@ if (az == -1)
 	  q2_acc = -ax/(2*q4_);
 	  q3_acc = 0;
   }
- 
   ROS_INFO("q1, q2, q3, q4, az: %f, %f, %f, %f, %f", q1_acc, q2_acc, q3_acc, q4_acc, az);
-	double q_acc_norm = sqrt(q1_acc*q1_acc + q2_acc*q2_acc + q3_acc*q3_acc + q4_acc*q4_acc);
-  q1_acc /= q_acc_norm;
-  q2_acc /= q_acc_norm;
-  q3_acc /= q_acc_norm;
-  q4_acc /= q_acc_norm;
-	
+  normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);	
   //l: magnetic field vector rotated into the intermediary frame.   
-  double lx, ly, lz;
-	lx = (q1_acc*q1_acc - q2_acc*q2_acc - q3_acc*q3_acc + q4_acc*q4_acc)*mx + 2*(q1_acc*q2_acc - q3_acc*q4_acc)*my + 2*(q1_acc*q3_acc + q2_acc*q4_acc)*mz;
-  ly = 2*(q1_acc*q2_acc + q3_acc*q4_acc)*mx + (-q1_acc*q1_acc + q2_acc*q2_acc - q3_acc*q3_acc + q4_acc*q4_acc)*my + 2*(q2_acc*q3_acc - q1_acc*q4_acc)*mz;
-  lz = 2*(q1_acc*q3_acc - q2_acc*q4_acc)*mx + 2*(q2_acc*q3_acc + q1_*q4_)*my + (-q1_acc*q1_acc - q2_acc*q2_acc + q3_acc*q3_acc + q4_acc*q4_acc)*mz;
-
+  double lx, ly;
+	lx = (q1_acc*q1_acc - q2_acc*q2_acc - q3_acc*q3_acc + q4_acc*q4_acc)*mx +
+     2*(q1_acc*q2_acc - q3_acc*q4_acc)*my + 2*(q1_acc*q3_acc + q2_acc*q4_acc)*mz;
+  ly = 2*(q1_acc*q2_acc + q3_acc*q4_acc)*mx + (-q1_acc*q1_acc + q2_acc*q2_acc -
+     q3_acc*q3_acc + q4_acc*q4_acc)*my + 2*(q2_acc*q3_acc - q1_acc*q4_acc)*mz;
   // q_mag is the quaternion that rotates the Global frame (North West Up) into the intermediary frame 
  	double q1_mag, q2_mag, q3_mag, q4_mag;
 	double gamma = lx*lx + ly*ly;	
 	double sq_gamma = sqrt(gamma);	
-	double den = sqrt(2*(gamma-lx*sq_gamma));
+	double denominator = sqrt(2*(gamma-lx*sq_gamma));
 	ROS_INFO("sq_gamma, try: %f %f", sq_gamma, (2*(gamma-lx*sq_gamma)));
 	q1_mag = 0;
 	q2_mag = 0;
   if (ly > 0)
   {
-	    q3_mag = -(sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
-	    q4_mag = ly/den;
-      double q_mag_norm = sqrt(q3_mag*q3_mag + q4_mag*q4_mag);
-      q3_mag /= q_mag_norm;
-  	  q4_mag /= q_mag_norm;
+    q3_mag = -(sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
+    q4_mag = ly/denominator;
+    normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
   }
   else if (ly < 0)
   {
-      q3_mag = (sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
-	    q4_mag = -ly/den;
-      double q_mag_norm = sqrt(q3_mag*q3_mag + q4_mag*q4_mag);
-      q3_mag /= q_mag_norm;
-  	  q4_mag /= q_mag_norm;
-   }
-   else if (ly == 0) 
-   { 
-		q3_mag = 1;
-  	q4_mag = 0;
-  	}
-  ROS_INFO("lx, ly, gamma, den: %f %f %f %f", lx, ly, gamma, den);
+    q3_mag = (sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
+    q4_mag = -ly/denominator;
+    normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
+  }
+  else if (ly == 0) 
+  { 
+    q3_mag = 1;
+	  q4_mag = 0;
+	 }
+  ROS_INFO("lx, ly, gamma, den: %f %f %f %f", lx, ly, gamma, denominator);
 	ROS_INFO("q3_mag, q4_mag: %f %f", q3_mag, q4_mag);
   //the quaternion multiplication between q_acc and q_mag represents the quaternion, orientation of the Global frame wrt the local frame.
 	q1 = q4_acc*q1_mag + q1_acc*q4_mag + q2_acc*q3_mag - q3_acc*q2_mag;
 	q2 = q4_acc*q2_mag + q2_acc*q4_mag + q3_acc*q1_mag - q1_acc*q3_mag;
 	q3 = q4_acc*q3_mag + q3_acc*q4_mag + q1_acc*q2_mag - q2_acc*q1_mag;
 	q4 = q4_acc*q4_mag - q1_acc*q1_mag - q2_acc*q2_mag - q3_acc*q3_mag;
-  
   //q1 = 0; q2 = 0; q3=q3_mag; q4 = q4_mag; 
   //q1 = q1_acc; q2 = q2_acc; q3=q3_acc; q4 = q4_acc; 
+}
+
+void KF::normalizeQuaternion(double& q1, double& q2, double& q3, double& q4)
+{
+  double q_norm = sqrt(q1*q1 + q2*q2 + q3*q3 + q4*q4);
+  q1 /= q_norm;
+  q2 /= q_norm;
+  q3 /= q_norm;
+  q4 /= q_norm;
 }
 
 void KF::getReferenceField(double mx, double my, double mz)
 {
   Eigen::Vector3d h_ref;
     
-  h_ref << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 2*(q1_*q3_ + q2_*q4_)*mz,
-           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my + 2*(q2_*q3_ - q1_*q4_)*mz,
-           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
+  h_ref << (q1_*q1_ - q2_*q2_ - q3_*q3_ + q4_*q4_)*mx + 2*(q1_*q2_ - q3_*q4_)*my + 
+      2*(q1_*q3_ + q2_*q4_)*mz,
+           2*(q1_*q2_ + q3_*q4_)*mx + (-q1_*q1_ + q2_*q2_ - q3_*q3_ + q4_*q4_)*my +
+      2*(q2_*q3_ - q1_*q4_)*mz,
+           2*(q1_*q3_ - q2_*q4_)*mx + 2*(q2_*q3_ + q1_*q4_)*my + 
+      (-q1_*q1_ - q2_*q2_ + q3_*q3_ + q4_*q4_)*mz;
 
   //h_ref /= h_ref.norm();
   hx_ = sqrt(h_ref(0)*h_ref(0) + h_ref(1)*h_ref(1));
@@ -759,7 +767,8 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 
   double rolla  = atan2(ay_, sqrt(ax_*ax_ + az_*az_));
   double pitcha = atan2(-ax_, sqrt(ay_*ay_ + az_*az_));
-  yaw_m =atan2( (-my_*cos(rolla) + mz_*sin(rolla) ) , (mx_*cos(pitcha) + my_*sin(pitcha)*sin(rolla) + mz_*sin(pitcha)*cos(rolla)) );
+  yaw_m =atan2( (-my_*cos(rolla) + mz_*sin(rolla) ) , 
+      (mx_*cos(pitcha) + my_*sin(pitcha)*sin(rolla) + mz_*sin(pitcha)*cos(rolla)));
   //yaw_m =atan2( (mx_*sin(roll)*sin(pitch) + my_*cos(roll) - mz_*sin(roll)*sin(pitch)),(mx_*cos(pitch)+ mz_*sin(pitch)) );
   yaw_m_msg.data = yaw_m;
 

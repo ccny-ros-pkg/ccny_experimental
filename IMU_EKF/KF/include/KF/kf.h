@@ -33,7 +33,8 @@ class KF
     typedef sensor_msgs::Imu              ImuMsg;
     typedef geometry_msgs::Vector3Stamped MagMsg;
 
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, geometry_msgs::Vector3Stamped> MySyncPolicy;
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, 
+        geometry_msgs::Vector3Stamped> MySyncPolicy;
     typedef message_filters::sync_policies::ApproximateTime<ImuMsg, MagMsg> SyncPolicy;
     typedef message_filters::Synchronizer<SyncPolicy> Synchronizer;    
     typedef message_filters::Subscriber<ImuMsg> ImuSubscriber; 
@@ -164,20 +165,23 @@ class KF
                         const MagMsg::ConstPtr& mav_msg);
     void poseCallback(const geometry_msgs::PoseStamped::ConstPtr pose_msg);
 
-    void updateBiases(double ax, double ay, double az, double p, double q, double r);
+    void updateBiases(double ax, double ay, double az, double p, double q,
+        double r);
     void prediction(double p, double q, double r, double dt);
     void correctionWithMag(double ax, double ay, double az,
                            double mx, double my, double mz);
     void correctionNoMag(double ax, double ay, double az);
-    double getInclination(double ax, double ay, double az, double mx, double my, double mz);
+    double getInclination(double ax, double ay, double az, double mx, double my,
+       double mz);
     void getReferenceField(double mx, double my, double mz);
-    void getOrientation(double ax, double ay, double az, double mx, double my, double mz, 
+    void getOrientation(double ax, double ay, double az, double mx, double my,
+       double mz, 
                          double& q1, double& q2, double& q3, double& q4);
+    void normalizeQuaternion(double& q1, double& q2, double& q3, double& q4);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
     void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
 
-    static Eigen::Vector3d rotateVectorByQuaternion(
-        const Eigen::Vector3d& v,
+    static Eigen::Vector3d rotateVectorByQuaternion(const Eigen::Vector3d& v,
         double q1, double q2, double q3, double q4);
 };
 
