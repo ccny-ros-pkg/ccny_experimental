@@ -49,7 +49,7 @@
   </node>
 
 #### IMU Madqwick Orientation Filter#######################################
-
+<!--
 
   <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
     args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
@@ -59,7 +59,7 @@
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
   </node>
-
+-->
 #### Nodelet manager ######################################################
 
   <node pkg="nodelet" type="nodelet" name="imu_manager"

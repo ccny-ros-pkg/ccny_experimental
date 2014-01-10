@@ -62,6 +62,7 @@ class KF
     tf::TransformBroadcaster tf_broadcaster_;
     
     double mx_, my_, mz_, ax_, ay_, az_;
+    double q1_prev_, q2_prev_, q3_prev_, q4_prev_;
     std::string fixed_frame_;
     std::string imu_frame_;
     std_msgs::Header imu_header_;
@@ -87,6 +88,9 @@ class KF
     void getOrientation(double ax, double ay, double az, double mx, double my,
        double mz, 
                          double& q1, double& q2, double& q3, double& q4);
+    double computeDeltaQuaternion(double q1, double q2, double q3, double q4);
+    void checkSolutions(double ax, double ay, double az, double& q1_acc,
+    double& q2_acc, double& q3_acc, double& q4_acc);
     void normalizeQuaternion(double& q1, double& q2, double& q3, double& q4);
     void normalizeVector(double& x, double& y, double& z);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
