@@ -222,13 +222,13 @@ void KF::checkSolutions(double ax, double ay, double az, double& q1_acc,
   double q1, q2, q3, q4;  
   //first solution
   p4 = sqrt((az + 1)*0.5);	
-  p1 = ay/(2*q4_acc);  
-  p2 = -ax/(2*q4_acc);
+  p1 = ay/(2*p4);  
+  p2 = -ax/(2*p4);
   p3 = 0;
   //second solution 
   q4 = -sqrt((az + 1)*0.5);	
-  q1 = ay/(2*q4_acc);  
-  q2 = -ax/(2*q4_acc);
+  q1 = ay/(2*q4);  
+  q2 = -ax/(2*q4);
   q3 = 0;
   double dp4, dq4;
   dp4 = computeDeltaQuaternion(p1, p2, p3, p4);
