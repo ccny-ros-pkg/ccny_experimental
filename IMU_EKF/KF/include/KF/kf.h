@@ -57,8 +57,12 @@ class KF
     
     ros::Publisher roll_acc_publisher_;
     ros::Publisher pitch_acc_publisher_;
-
-      
+    
+    ros::Publisher q1_publisher_;
+    ros::Publisher q2_publisher_;
+    ros::Publisher q3_publisher_;
+    ros::Publisher q4_publisher_;
+  
     tf::TransformBroadcaster tf_broadcaster_;
     
     double mx_, my_, mz_, ax_, ay_, az_;
@@ -91,6 +95,9 @@ class KF
     double computeDeltaQuaternion(double q1, double q2, double q3, double q4);
     void checkSolutions(double ax, double ay, double az, double& q1_acc,
     double& q2_acc, double& q3_acc, double& q4_acc);
+    void quaternionMultiplication(double p1, double p2, double p3, double p4,
+    double q1, double q2, double q3, double q4, 
+    double& r1, double& r2, double& r3, double& r4);
     void normalizeQuaternion(double& q1, double& q2, double& q3, double& q4);
     void normalizeVector(double& x, double& y, double& z);
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);

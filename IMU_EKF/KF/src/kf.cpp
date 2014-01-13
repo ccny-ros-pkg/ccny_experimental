@@ -27,7 +27,11 @@ KF::KF(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   roll_acc_publisher_    = nh_.advertise<std_msgs::Float32>("roll_acc", queue_size);
   pitch_acc_publisher_   = nh_.advertise<std_msgs::Float32>("pitch_acc", queue_size);
   yaw_m_publisher_   = nh_.advertise<std_msgs::Float32>("yaw_m", queue_size);
-  
+
+  q1_publisher_   = nh_.advertise<std_msgs::Float32>("q1", queue_size);
+  q2_publisher_   = nh_.advertise<std_msgs::Float32>("q2", queue_size);
+  q3_publisher_   = nh_.advertise<std_msgs::Float32>("q3", queue_size);
+  q4_publisher_   = nh_.advertise<std_msgs::Float32>("q4", queue_size);
 
   // **** register subscribers
 
@@ -122,7 +126,6 @@ void KF::imuMagCallback(
       q3_ = q3_meas;
       q4_ = q4_meas;
       normalizeQuaternion(q1_, q2_, q3_, q4_);
-      ROS_INFO("q1, q2, q3, q4: %f %f, %f, %f", q1_, q2_, q3_, q4_);
     }
     ax_ = ax; ay_ = ay; az_ = az;
     mx_ = mx; my_ = my; mz_ = mz;
@@ -140,79 +143,76 @@ void KF::getOrientation(double ax, double ay, double az, double mx, double my,
   // (intermediary frame)
   double q1_acc, q2_acc, q3_acc, q4_acc;
     
-  checkSolutions(ax, ay, az, q1_acc, q2_acc, q3_acc, q4_acc); 
-  normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);
-  q1_prev_ = q1_acc;
-  q2_prev_ = q2_acc;
-  q3_prev_ = q3_acc;
-  q4_prev_ = q4_acc; 
-  /*  
-  if (az < 0)
-  { 
-    ROS_ERROR("AZ = -1");
-    q1_acc =-1;
-    q2_acc = 0;
-    q3_acc = 0;
-    q4_acc = 0;
-  }
-  else if 
-  {
-	  q4_acc = sqrt((az + 1)*0.5);	
+  //checkSolutions(ax, ay, az, q1_acc, q2_acc, q3_acc, q4_acc); 
+  //normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);
+
+  double lx, ly;
+ /* q4_acc = sqrt((az + 1)*0.5);	
 	  q1_acc = ay/(2*q4_acc);
 	  q2_acc = -ax/(2*q4_acc);
 	  q3_acc = 0;
-    normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);	
-  }
-*/
-  ROS_INFO("ax, ay, az: %f, %f, %f", ax, ay, az);
-  //l: magnetic field vector rotated into the intermediary frame.   
-  double lx, ly;
-  
-  //lx = ((-ax*ax + ay*ay + (1+az)*(1*az))*mx - 2*ax*(ay*my + mz + az*mz))/2*(1+az);  
- 	//ly = (-2*ax*ay*mx + ax*ax*my + ((-ay*ay)+(1*az)*(1+az))*my - 2*ay*(1 + az)*mz)/2*(1+az);
- 	//lz = ax*mx + ay*my + (-ax*ax -ay*ay +(1+az)*(1+az))*mz/2*(1+az);
 
-  lx = (q1_acc*q1_acc - q2_acc*q2_acc  + q4_acc*q4_acc)*mx + 2*(q1_acc*q2_acc)*my + 2*(q2_acc*q4_acc)*mz;
-  ly = 2*(q1_acc*q2_acc)*mx + (-q1_acc*q1_acc + q2_acc*q2_acc + q4_acc*q4_acc)*my + 2*(-q1_acc*q4_acc)*mz;
+    double az1 = az + 1;
+    lx = ((-ax*ax + ay*ay + az1*az1)*mx - 2*ax*(ay*my + mz + az*mz))/(2*az1);  
+ 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);*/
+  if (az >= 0)
+  { 
+    q4_acc = sqrt((az + 1)*0.5);	
+	  q1_acc = ay/(2*q4_acc);
+	  q2_acc = -ax/(2*q4_acc);
+	  q3_acc = 0;
+
+    double az1 = az + 1;
+    lx = ((-ax*ax + ay*ay + az1*az1)*mx - 2*ax*(ay*my + mz + az*mz))/(2*az1);  
+ 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);
+  }
+  else 
+  {
+    q1_acc = sqrt((1 - az)*0.5);	  
+    q2_acc = 0;
+	  q3_acc = ax/(2*q1_acc);
+    q4_acc = ay/(2*q1_acc);
+
+    double az1 = az - 1;
+    lx = ((ax*ax - ay*ay - az1*az1)*mx + 2*ax*(ay*my - mz + az*mz))/(2*az1);  
+ 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);
+  }
+  normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);
   
   // q_mag is the quaternion that rotates the Global frame (North West Up) into
   // the intermediary frame 
  	double q1_mag, q2_mag, q3_mag, q4_mag;
 	double gamma = lx*lx + ly*ly;	
-	double sq_gamma = sqrt(gamma);	
-	double denominator = sqrt(2*(gamma-lx*sq_gamma));
-	q1_mag = 0;
+	double beta = sqrt(gamma - lx*sqrt(gamma));
+	
+  q1_mag = 0;
 	q2_mag = 0;
+
   if (ly > 0)
   {
-    q3_mag = -(sqrt(gamma - lx*sq_gamma))/(sqrt(2*gamma));
-    q4_mag = ly/denominator;
+    q3_mag = -beta / (sqrt(2.0*gamma));
+    q4_mag = ly / (sqrt(2.0) * beta);
     normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
   }
   else if (ly < 0)
   {
-    q3_mag = (sqrt(gamma-lx*sq_gamma))/(sqrt(2*gamma));
-    q4_mag = -ly/denominator;
+    q3_mag = beta / (sqrt(2.0*gamma));
+    q4_mag = -ly / (sqrt(2.0) * beta);
     normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
   }
   else if (ly == 0) 
   { 
     q3_mag = 1;
 	  q4_mag = 0;
-	 }
-  ROS_INFO("lx, ly: %f %f", lx, ly);
-	ROS_INFO("q3_mag, q4_mag: %f %f", q3_mag, q4_mag);
-  //the quaternion multiplication between q_acc and q_mag represents the 
-  //quaternion, orientation of the Global frame wrt the local frame.
+	}
   
-  q1 = q1_acc*q4_mag + q2_acc*q3_mag;
-  q2 = q2_acc*q4_mag - q1_acc*q3_mag;
-  q3 = q4_acc*q3_mag + q3_acc*q4_mag;
-  q4 = q4_acc*q4_mag - q3_acc*q3_mag;	
+  //the quaternion multiplication between q_acc and q_mag represents the 
+  //quaternion, orientation of the Global frame wrt the local frame.  
+    
+  quaternionMultiplication(q1_mag, q2_mag, q3_mag, q4_mag,
+      q1_acc, q2_acc, q3_acc, q4_acc, q1, q2, q3, q4);
 
- 
-  //q1 = 0; q2 = 0; q3=q3_mag; q4 = q4_mag; 
-  q1 = q1_acc; q2 = q2_acc; q3=q3_acc; q4 = q4_acc; 
+  ROS_INFO("q1, q2, q3, q4: %f %f, %f, %f", q1, q2, q3, q4);
 }
 
 void KF::checkSolutions(double ax, double ay, double az, double& q1_acc,
@@ -259,6 +259,16 @@ double KF::computeDeltaQuaternion(double q1, double q2, double q3, double q4)
   return (q1*q1_prev_ + q2*q2_prev_ + q4*q4_prev_);
 }
 
+void KF::quaternionMultiplication(double p1, double p2, double p3, double p4,
+    double q1, double q2, double q3, double q4, 
+    double& r1, double& r2, double& r3, double& r4)
+{
+  r1 = p1*q4 + p2*q3 - p3*q2 + p4*q1;
+  r2 = p2*q4 - p1*q3 + p3*q1 + p4*q2;
+  r3 = p1*q2 - p2*q1 + p3*q4 + p4*q3;
+  r4 = p4*q4 - p1*q1 - p2*q2 - p3*q3;	 
+}
+
 void KF::normalizeQuaternion(double& q1, double& q2, double& q3, double& q4)
 {
   double q_norm = sqrt(q1*q1 + q2*q2 + q3*q3 + q4*q4);
@@ -279,8 +289,6 @@ void KF::normalizeVector(double& x, double& y, double& z)
   y /= norm;
   z /= norm;
 }
-
-
 
 void KF::publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 {
@@ -349,19 +357,37 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   roll_acc_publisher_.publish(roll_acc_msg);
   pitch_acc_publisher_.publish(pitch_acc_msg);
 
-   // XSens roll and pitch publishing 
-   double roll_x, pitch_x, yaw_x;
-   tf::Quaternion q_kf; 
-   tf::quaternionMsgToTF(imu_msg_raw->orientation, q_kf);
-   M.setRotation(q_kf);
-   M.getRPY(roll_x, pitch_x, yaw_x);
-   std_msgs::Float32 roll_x_msg, pitch_x_msg, yaw_x_msg;
-   roll_x_msg.data = roll_x;
-   pitch_x_msg.data = pitch_x;
-   yaw_x_msg.data = yaw_x;
-   roll_xekf_publisher_.publish(roll_x_msg);
-   pitch_xekf_publisher_.publish(pitch_x_msg);
-   yaw_xekf_publisher_.publish(yaw_x_msg); 
+  std_msgs::Float32 q1_msg;
+  std_msgs::Float32 q2_msg;
+  std_msgs::Float32 q3_msg;
+  std_msgs::Float32 q4_msg;
+  
+  q1_msg.data = q1_;
+  q2_msg.data = q2_;
+  q3_msg.data = q3_;
+  q4_msg.data = q4_;
+  q1_publisher_.publish(q1_msg);
+  q2_publisher_.publish(q2_msg);
+  q3_publisher_.publish(q3_msg);
+  q4_publisher_.publish(q4_msg);
+
+  roll_msg.data = roll;
+  pitch_msg.data = pitch;
+  yaw_msg.data = yaw;
+
+ // XSens roll and pitch publishing 
+  double roll_x, pitch_x, yaw_x;
+  tf::Quaternion q_kf; 
+  tf::quaternionMsgToTF(imu_msg_raw->orientation, q_kf);
+  M.setRotation(q_kf);
+  M.getRPY(roll_x, pitch_x, yaw_x);
+  std_msgs::Float32 roll_x_msg, pitch_x_msg, yaw_x_msg;
+  roll_x_msg.data = roll_x;
+  pitch_x_msg.data = pitch_x;
+  yaw_x_msg.data = yaw_x;
+  roll_xekf_publisher_.publish(roll_x_msg);
+  pitch_xekf_publisher_.publish(pitch_x_msg);
+  yaw_xekf_publisher_.publish(yaw_x_msg); 
 }
 
 
