@@ -6,8 +6,7 @@ KF::KF(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   nh_(nh), 
   nh_private_(nh_private),
   initialized_(false),
-  initialized_filter_(false),
-  q1_(0.0), q2_(0.0), q3_(0.0),  q4_(1.0)
+  initialized_filter_(false)
 {
   ROS_INFO ("Starting KF");
   initializeParams();
@@ -28,10 +27,11 @@ KF::KF(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   pitch_acc_publisher_   = nh_.advertise<std_msgs::Float32>("pitch_acc", queue_size);
   yaw_m_publisher_   = nh_.advertise<std_msgs::Float32>("yaw_m", queue_size);
 
+  q0_publisher_   = nh_.advertise<std_msgs::Float32>("q0", queue_size);  
   q1_publisher_   = nh_.advertise<std_msgs::Float32>("q1", queue_size);
   q2_publisher_   = nh_.advertise<std_msgs::Float32>("q2", queue_size);
   q3_publisher_   = nh_.advertise<std_msgs::Float32>("q3", queue_size);
-  q4_publisher_   = nh_.advertise<std_msgs::Float32>("q4", queue_size);
+  
 
   // **** register subscribers
 
@@ -94,15 +94,10 @@ void KF::imuMagCallback(
         (mx*cos(pitch) + my*sin(pitch)*sin(roll) + mz*sin(pitch)*cos(roll)) );
     tf::Quaternion init_q = tf::createQuaternionFromRPY(roll, pitch, yaw);
     
-    //INITIALIZE STATE
-    q1_ = init_q.getX();
-    q2_ = init_q.getY();
-    q3_ = init_q.getZ();
-    q4_ = init_q.getW();
     q1_prev_ = 0;
     q2_prev_ = 0;
     q3_prev_ = 0;
-    q4_prev_ = 1;
+    q0_prev_ = 1;
     initialized_filter_ = true; 
   }
   else
@@ -119,13 +114,13 @@ void KF::imuMagCallback(
       //normalizeVector(mx, my, mz);
       //acceleration needs to be normalized in order to find the 
       //relative quaternion, magnetic field does not have to!
-      double q1_meas, q2_meas, q3_meas, q4_meas;
-      getOrientation(ax, ay, az, mx, my, mz, q1_meas, q2_meas, q3_meas, q4_meas);
+      double q0_meas, q1_meas, q2_meas, q3_meas;
+      getOrientation(ax, ay, az, mx, my, mz, q0_meas, q1_meas, q2_meas, q3_meas);
+      q0_ = q0_meas;      
       q1_ = q1_meas;
       q2_ = q2_meas;
       q3_ = q3_meas;
-      q4_ = q4_meas;
-      normalizeQuaternion(q1_, q2_, q3_, q4_);
+      normalizeQuaternion(q0_, q1_, q2_, q3_ );
     }
     ax_ = ax; ay_ = ay; az_ = az;
     mx_ = mx; my_ = my; mz_ = mz;
@@ -135,91 +130,61 @@ void KF::imuMagCallback(
 }
 
 
-void KF::getOrientation(double ax, double ay, double az, double mx, double my,
-    double mz, double& q1, double& q2, double& q3, double& q4)
+void KF::getOrientation(double ax, double ay, double az, 
+                        double mx, double my, double mz,  
+                        double& q0, double& q1, double& q2, double& q3)
 {
-  // q_ acc is the quaternion obtained from the acceleration vector representing 
-  //the orientation of the Global frame wrt the Local frame with arbitrary yaw
-  // (intermediary frame)
-  double q1_acc, q2_acc, q3_acc, q4_acc;
+  // q_acc is the quaternion obtained from the acceleration vector representing 
+  // the orientation of the Global frame wrt the Local frame with arbitrary yaw
+  // (intermediary frame). q3_acc is defined as 0.
+  double q0_acc, q1_acc, q2_acc;
     
-  //checkSolutions(ax, ay, az, q1_acc, q2_acc, q3_acc, q4_acc); 
-  //normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);
-
-  double lx, ly;
- /* q4_acc = sqrt((az + 1)*0.5);	
-	  q1_acc = ay/(2*q4_acc);
-	  q2_acc = -ax/(2*q4_acc);
-	  q3_acc = 0;
-
-    double az1 = az + 1;
-    lx = ((-ax*ax + ay*ay + az1*az1)*mx - 2*ax*(ay*my + mz + az*mz))/(2*az1);  
- 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);*/
-  if (az >= 0)
-  { 
-    q4_acc = sqrt((az + 1)*0.5);	
-	  q1_acc = ay/(2*q4_acc);
-	  q2_acc = -ax/(2*q4_acc);
-	  q3_acc = 0;
-
-    double az1 = az + 1;
-    lx = ((-ax*ax + ay*ay + az1*az1)*mx - 2*ax*(ay*my + mz + az*mz))/(2*az1);  
- 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);
-  }
+  if (az == -1)
+  {
+    q0_acc =  0;
+    q1_acc = -1;
+    q2_acc =  0;
+  }  
   else 
   {
-    q1_acc = sqrt((1 - az)*0.5);	  
-    q2_acc = 0;
-	  q3_acc = ax/(2*q1_acc);
-    q4_acc = ay/(2*q1_acc);
-
-    double az1 = az - 1;
-    lx = ((ax*ax - ay*ay - az1*az1)*mx + 2*ax*(ay*my - mz + az*mz))/(2*az1);  
- 	  ly = (-2*ax*ay*mx + ax*ax*my + (-ay*ay + az1*az1)*my - 2*ay*az1*mz)/(2*az1);
+    q0_acc =  sqrt((az + 1) * 0.5);	
+    q1_acc = -ay/(2.0 * q0_acc);
+    q2_acc =  ax/(2.0 * q0_acc);
   }
-  normalizeQuaternion(q1_acc, q2_acc, q3_acc, q4_acc);
+
+  // [lx, ly, lz] is the magnetic field reading, rotated into the intermediary
+  // frame by the inverse of q_acc.
+  // l = R(q_acc)^-1 l
+  double lx = (q0_acc*q0_acc + q1_acc*q1_acc - q2_acc*q2_acc)*mx + 
+      2.0 * (q1_acc*q2_acc)*my - 2.0 * (q0_acc*q2_acc)*mz;
+  double ly = 2.0 * (q1_acc*q2_acc)*mx + (q0_acc*q0_acc - q1_acc*q1_acc + 
+      q2_acc*q2_acc)*my + 2.0 * (q0_acc*q1_acc)*mz;
   
   // q_mag is the quaternion that rotates the Global frame (North West Up) into
-  // the intermediary frame 
- 	double q1_mag, q2_mag, q3_mag, q4_mag;
+  // the intermediary frame.
+  // q1_mag and q2_mag are defined as 0.
 	double gamma = lx*lx + ly*ly;	
-	double beta = sqrt(gamma - lx*sqrt(gamma));
-	
-  q1_mag = 0;
-	q2_mag = 0;
-
-  if (ly > 0)
-  {
-    q3_mag = -beta / (sqrt(2.0*gamma));
-    q4_mag = ly / (sqrt(2.0) * beta);
-    normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
-  }
-  else if (ly < 0)
-  {
-    q3_mag = beta / (sqrt(2.0*gamma));
-    q4_mag = -ly / (sqrt(2.0) * beta);
-    normalizeQuaternion(q1_mag, q2_mag, q3_mag, q4_mag);
-  }
-  else if (ly == 0) 
-  { 
-    q3_mag = 1;
-	  q4_mag = 0;
-	}
+	double beta = sqrt(gamma + lx*sqrt(gamma));
+  double q0_mag = beta / (sqrt(2.0 * gamma));  
+  double q3_mag = ly / (sqrt(2.0) * beta); 
   
-  //the quaternion multiplication between q_acc and q_mag represents the 
-  //quaternion, orientation of the Global frame wrt the local frame.  
-    
-  quaternionMultiplication(q1_mag, q2_mag, q3_mag, q4_mag,
-      q1_acc, q2_acc, q3_acc, q4_acc, q1, q2, q3, q4);
+  // The quaternion multiplication between q_acc and q_mag represents the 
+  // quaternion, orientation of the Global frame wrt the local frame.  
+  // q = q_acc times q_mag  
+  q0 = q0_acc*q0_mag;     
+  q1 = q1_acc*q0_mag + q2_acc*q3_mag;
+  q2 = q2_acc*q0_mag - q1_acc*q3_mag;
+  q3 = q0_acc*q3_mag;
 
-  ROS_INFO("q1, q2, q3, q4: %f %f, %f, %f", q1, q2, q3, q4);
+  // It should already be normalized here, up to numerical errors.
+  normalizeQuaternion(q0_mag, q1_mag, q2_mag, q3_mag);
 }
-
-void KF::checkSolutions(double ax, double ay, double az, double& q1_acc,
-    double& q2_acc, double& q3_acc, double& q4_acc)
+/*
+void KF::checkSolutions(double ax, double ay, double az, double& q0_acc,
+    double& q1_acc, double& q2_acc, double& q3_acc)
 {
-  double p1, p2, p3, p4;
-  double q1, q2, q3, q4;  
+  double p0, p1, p2, p3;
+  double q0, q1, q2, q3;  
   //first solution
   p4 = sqrt((az + 1)*0.5);	
   p1 = ay/(2*p4);  
@@ -258,26 +223,26 @@ double KF::computeDeltaQuaternion(double q1, double q2, double q3, double q4)
 {
   return (q1*q1_prev_ + q2*q2_prev_ + q4*q4_prev_);
 }
-
-void KF::quaternionMultiplication(double p1, double p2, double p3, double p4,
-    double q1, double q2, double q3, double q4, 
-    double& r1, double& r2, double& r3, double& r4)
+*/
+void KF::quaternionMultiplication(double p0, double p1, double p2, double p3, 
+    double q0, double q1, double q2, double q3, 
+    double& r0, double& r1, double& r2, double& r3)
 {
-  r1 = p1*q4 + p2*q3 - p3*q2 + p4*q1;
-  r2 = p2*q4 - p1*q3 + p3*q1 + p4*q2;
-  r3 = p1*q2 - p2*q1 + p3*q4 + p4*q3;
-  r4 = p4*q4 - p1*q1 - p2*q2 - p3*q3;	 
+  r0 = p0*q0 - p1*q1 - p2*q2 - p3*q3;  
+  r1 = p0*q1 + p1*q0 + p2*q3 - p3*q2;
+  r2 = p0*q2 - p1*q3 + p2*q0 + p3*q1;
+  r3 = p0*q3 + p1*q2 - p2*q1 + p3*q0;
 }
 
-void KF::normalizeQuaternion(double& q1, double& q2, double& q3, double& q4)
+void KF::normalizeQuaternion(double& q0, double& q1, double& q2, double& q3)
 {
-  double q_norm = sqrt(q1*q1 + q2*q2 + q3*q3 + q4*q4);
+  double q_norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
   if (q_norm == 0.0)
     ROS_ERROR("QUATERNION NORM ZERO") ; 
+  q0 /= q_norm;  
   q1 /= q_norm;
   q2 /= q_norm;
   q3 /= q_norm;
-  q4 /= q_norm;
 }
 
 void KF::normalizeVector(double& x, double& y, double& z)
@@ -290,10 +255,34 @@ void KF::normalizeVector(double& x, double& y, double& z)
   z /= norm;
 }
 
+void KF::invertQuaternion(
+    double q0, double q1, double q2, double q3,
+    double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv) 
+{
+  // Assumes quaternion is normalized.
+  q0_inv = q0;
+  q1_inv = -q1;
+  q2_inv = -q2;
+  q3_inv = -q3;
+}
+
+tf::Quaternion KF::hamiltonToTFQuaternion(
+    double q0, double q1, double q2, double q3)
+{
+  // ROS uses the Hamilton quaternion convention (q0 is the scalar). However, 
+  // the ROS quternion is in the form [x, y, z, w], with w as the scalar.
+  return tf::Quaternion(q1, q2, q3, q0);
+}
+
 void KF::publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 {
-   
-  tf::Quaternion q(q1_, q2_, q3_, q4_);
+  // The state is global wrt local frame. Invert to have local wrt global.
+  double q0_inv, q1_inv, q2_inv, q3_inv;
+  invertQuaternion(q0_, q1_, q2_, q3_, q0_inv, q1_inv, q2_inv, q3_inv);
+
+  // Convert to ROS quaternion.
+  tf::Quaternion q = hamiltonToTFQuaternion(q0_inv, q1_inv, q2_inv, q3_inv);
+
   tf::Transform transform;
   transform.setOrigin( tf::Vector3( 0.0, 0.0, 0.0 ) );
   transform.setRotation( q );
@@ -301,14 +290,16 @@ void KF::publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
                    imu_msg_raw->header.stamp,
                    fixed_frame_,
                    imu_frame_ ) );
-
 }
 
 void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
 {
-  // create orientation quaternion
-  // q4_ is the angle, q1_, q2_, q3_ are the axes
-  tf::Quaternion q(q1_, q2_, q3_, q4_);
+  // The state is global wrt local frame. Invert to have local wrt global.
+  double q0_inv, q1_inv, q2_inv, q3_inv;
+  invertQuaternion(q0_, q1_, q2_, q3_, q0_inv, q1_inv, q2_inv, q3_inv);
+
+  // Convert to ROS quaternion.
+  tf::Quaternion q = hamiltonToTFQuaternion(q0_inv, q1_inv, q2_inv, q3_inv);
 
   // create and publish fitlered IMU message
   boost::shared_ptr<sensor_msgs::Imu> imu_msg = boost::make_shared<sensor_msgs::Imu>(*imu_msg_raw);
@@ -360,16 +351,15 @@ void KF::publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw)
   std_msgs::Float32 q1_msg;
   std_msgs::Float32 q2_msg;
   std_msgs::Float32 q3_msg;
-  std_msgs::Float32 q4_msg;
-  
+  std_msgs::Float32 q0_msg;
+  q0_msg.data = q0_;
   q1_msg.data = q1_;
   q2_msg.data = q2_;
   q3_msg.data = q3_;
-  q4_msg.data = q4_;
   q1_publisher_.publish(q1_msg);
   q2_publisher_.publish(q2_msg);
   q3_publisher_.publish(q3_msg);
-  q4_publisher_.publish(q4_msg);
+  q0_publisher_.publish(q0_msg);
 
   roll_msg.data = roll;
   pitch_msg.data = pitch;

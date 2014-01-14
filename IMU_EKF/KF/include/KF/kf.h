@@ -58,15 +58,15 @@ class KF
     ros::Publisher roll_acc_publisher_;
     ros::Publisher pitch_acc_publisher_;
     
+    ros::Publisher q0_publisher_;    
     ros::Publisher q1_publisher_;
     ros::Publisher q2_publisher_;
     ros::Publisher q3_publisher_;
-    ros::Publisher q4_publisher_;
-  
+      
     tf::TransformBroadcaster tf_broadcaster_;
     
     double mx_, my_, mz_, ax_, ay_, az_;
-    double q1_prev_, q2_prev_, q3_prev_, q4_prev_;
+    double q0_prev_, q1_prev_, q2_prev_, q3_prev_;
     std::string fixed_frame_;
     std::string imu_frame_;
     std_msgs::Header imu_header_;
@@ -81,7 +81,7 @@ class KF
     bool initialized_filter_;
     boost::mutex mutex_;
     
-    double q1_, q2_, q3_, q4_;  // quaternion
+    double q0_, q1_, q2_, q3_;  // quaternion
     double constant_dt_;
 
     // **** member functions
@@ -89,19 +89,30 @@ class KF
   
     void imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
                         const MagMsg::ConstPtr& mav_msg);
-    void getOrientation(double ax, double ay, double az, double mx, double my,
-       double mz, 
-                         double& q1, double& q2, double& q3, double& q4);
+
+    void getOrientation(double ax, double ay, double az, 
+                        double mx, double my, double mz, 
+                        double& q0, double& q1, double& q2, double& q3);
+  
+    void quaternionMultiplication(double p0, double p1, double p2, double p3,
+                                  double q0, double q1, double q2, double q3, 
+                                  double& r0, double& r1, double& r2, double& r3);
+    void normalizeQuaternion(double& q0, double& q1, double& q2, double& q3);
+    void invertQuaternion(
+        double q0, double q1, double q2, double q3,
+        double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv);
+
+    void normalizeVector(double& x, double& y, double& z);
+
+    tf::Quaternion hamiltonToTFQuaternion(
+        double q0, double q1, double q2, double q3);
+    void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
+    void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
+
     double computeDeltaQuaternion(double q1, double q2, double q3, double q4);
     void checkSolutions(double ax, double ay, double az, double& q1_acc,
     double& q2_acc, double& q3_acc, double& q4_acc);
-    void quaternionMultiplication(double p1, double p2, double p3, double p4,
-    double q1, double q2, double q3, double q4, 
-    double& r1, double& r2, double& r3, double& r4);
-    void normalizeQuaternion(double& q1, double& q2, double& q3, double& q4);
-    void normalizeVector(double& x, double& y, double& z);
-    void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
-    void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
+    
  
 };
 
