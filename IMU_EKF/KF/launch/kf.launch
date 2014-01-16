@@ -26,40 +26,24 @@
 	<node   pkg="KF"   type="kf_node" name="kf" output="screen" >
 
     <param name="do_bias_estimation" value="true"/>
-    <param name="use_mag"      value="true"/>
-    <param name="sigma_gx"     value="0.001"/>
-    <param name="sigma_gy"     value="0.001"/>
-    <param name="sigma_gz"     value="0.001"/>  
+    <param name="use_mag"      value="false"/>
     
-    <param name="sigma_ax"     value="0.003"/>
-    <param name="sigma_ay"     value="0.003"/>
-    <param name="sigma_az"     value="0.003"/>
-    
-    <param name="sigma_hx"     value="0.0001"/>
-    <param name="sigma_hy"     value="0.0001"/>
-    <param name="sigma_hz"     value="0.0001"/>
-    
-    <param name="hx"              value="0.199791"/>
-    <param name="hy"              value="0.046448"/>
-    <param name="hz"              value="-0.478926"/>
-  
-    
-    <param name="alpha"                 value="0.001"/>
+    <param name="bias_alpha_"                 value="0.007"/> #for Xsens
     
   </node>
 
 #### IMU Madqwick Orientation Filter#######################################
-<!--
+
 
   <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
     args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
     output="screen">
 
-    <param name="use_mag" value="true"/>
+    <param name="use_mag" value="false"/>
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
   </node>
--->
+
 #### Nodelet manager ######################################################
 
   <node pkg="nodelet" type="nodelet" name="imu_manager"

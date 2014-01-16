@@ -17,7 +17,11 @@
 #include <Eigen/LU>
 #include <Eigen/Eigen>
 
-
+const double kGravity= 9.81;
+const double kAngularVelocityThreshold = 0.2;
+const double kAccelerationThreshold = 0.1;
+const double kDeltaAngularVelocityThreshold = 0.01;
+const double alpha_ = 0.01;
 class KF
 {
   public:
@@ -43,7 +47,6 @@ class KF
     boost::shared_ptr<ImuSubscriber> imu_subscriber_;
     boost::shared_ptr<MagSubscriber> mag_subscriber_;
 
-    
     ros::Publisher imu_KF_publisher_;
     
     ros::Publisher roll_ekf_publisher_; 
@@ -62,25 +65,38 @@ class KF
     ros::Publisher q1_publisher_;
     ros::Publisher q2_publisher_;
     ros::Publisher q3_publisher_;
-      
+    
+    ros::Publisher q0_pred_publisher_;
+    ros::Publisher q1_pred_publisher_;
+    ros::Publisher q2_pred_publisher_;
+    ros::Publisher q3_pred_publisher_;
+
+    ros::Publisher q0_meas_publisher_;
+    ros::Publisher q1_meas_publisher_;
+    ros::Publisher q2_meas_publisher_;
+    ros::Publisher q3_meas_publisher_;
+
     tf::TransformBroadcaster tf_broadcaster_;
     
-    double mx_, my_, mz_, ax_, ay_, az_;
-    double q0_prev_, q1_prev_, q2_prev_, q3_prev_;
     std::string fixed_frame_;
     std::string imu_frame_;
     std_msgs::Header imu_header_;
-    
-    
-    std::vector<ros::Time> t_;
-
-     // **** state variables
-    ros::Time sync_time_;
-    ros::Time timestamp_;
-    bool initialized_;
+        
+    double bias_alpha_;
+    bool use_mag_;
+    // **** state variables
+  
+    ros::Time time_prev_;
     bool initialized_filter_;
     boost::mutex mutex_;
-    
+
+    // TODO (idryanov) these are only needed for debug.    
+    double mx_, my_, mz_, ax_, ay_, az_;
+
+    double wx_prev_, wy_prev_, wz_prev_;
+    double q0_prev_, q1_prev_, q2_prev_, q3_prev_;
+
+    double bias_wx_, bias_wy_, bias_wz_;
     double q0_, q1_, q2_, q3_;  // quaternion
     double constant_dt_;
 
@@ -89,10 +105,23 @@ class KF
   
     void imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
                         const MagMsg::ConstPtr& mav_msg);
+    
+    void imuCallback(const ImuMsg::ConstPtr& imu_msg_raw);
+
+    void updateBiases(double ax, double ay, double az, 
+                      double wx, double wy, double wz);
+
+    void prediction(double wx, double wy, double wz, double dt,
+                    double& q0_pred, double& q1_pred, double& q2_pred, double& q3_pred);
 
     void getOrientation(double ax, double ay, double az, 
                         double mx, double my, double mz, 
                         double& q0, double& q1, double& q2, double& q3);
+
+    void getOrientation(double ax, double ay, double az, 
+                        double q0_pred, double q1_pred, double q2_pred, double q3_pred, 
+                        double& q0, double& q1, double& q2, double& q3);
+
   
     void quaternionMultiplication(double p0, double p1, double p2, double p3,
                                   double q0, double q1, double q2, double q3, 
@@ -109,11 +138,9 @@ class KF
     void publishTransform(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
     void publishFilteredMsg(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
 
-    double computeDeltaQuaternion(double q1, double q2, double q3, double q4);
-    void checkSolutions(double ax, double ay, double az, double& q1_acc,
-    double& q2_acc, double& q3_acc, double& q4_acc);
-    
- 
+    double computeDeltaQuaternion(double q0, double q1, double q2, double q3);
+    //void checkSolutions(double ax, double ay, double az, double& q1_acc,
+    //double& q2_acc, double& q3_acc, double& q4_acc);
 };
 
 #endif // KF_H
