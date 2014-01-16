@@ -19,26 +19,12 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+# create complementary_filter library
+rosbuild_add_library(complementary_filter
+                     src/complementary_filter.cpp 
+                     src/complementary_filter_ros.cpp)
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
-
-#common commands for building c++ executables and libraries
-rosbuild_add_library(KF src/kf.cpp)
-
-# create kf_nodelet library
-rosbuild_add_library (kf_nodelet src/kf_nodelet.cpp)
-target_link_libraries (kf_nodelet KF)
-
-# create kf_node library
-rosbuild_add_executable(kf_node src/kf_node.cpp)
-target_link_libraries (kf_node KF)
+# create complementary_filter_node executable
+rosbuild_add_executable(complementary_filter_node 
+                        src/complementary_filter_node.cpp)
+target_link_libraries(complementary_filter_node complementary_filter)

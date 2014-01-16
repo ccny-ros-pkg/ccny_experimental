@@ -12,6 +12,10 @@ class ComplementaryFilter
     bool setGain(double gain);
     double getGain() const;
 
+    // Initialize using a quaternion representing the orientation of the fixed
+    // frame wrt the global frame.
+    void initialize(double q0, double q1, double q2, double q3);
+
     // Update from accelerometer and gyroscope data.
     // [ax, ay, az]: Normalized gravity vector.
     // [wx, wy, wz]: Angular veloctiy, in rad / s.

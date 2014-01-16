@@ -28,6 +28,12 @@ double ComplementaryFilter::getGain() const
   return gain_;
 }
 
+void ComplementaryFilter::initialize(double q0, double q1, double q2, double q3) 
+{
+  // Set the state to inverse (state is fixed wrt body).
+  invertQuaternion(q0, q1, q2, q3, q0_, q1_, q2_, q3_);
+}
+
 void ComplementaryFilter::update(double ax, double ay, double az, 
                                  double wx, double wy, double wz,
                                  double dt)
@@ -171,7 +177,7 @@ void ComplementaryFilter::filter(
 void ComplementaryFilter::getOrientation(
     double& q0, double& q1, double& q2, double& q3) const
 {
-  // Return the inverrse of the state (state is fixed wrt body).
+  // Return the inverse of the state (state is fixed wrt body).
   invertQuaternion(q0_, q1_, q2_, q3_, q0, q1, q2, q3);
 }
 
