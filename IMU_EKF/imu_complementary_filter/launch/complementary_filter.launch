@@ -1,0 +1,8 @@
+<!-- ComplementaryFilter launch file -->
+<launch>
+  <node pkg="imu_complementary_filter" type="complementary_filter_node"
+      name="complementary_filter_node" output="screen">
+    <param name="use_mag" value="false"/>
+    <param name="gain" value="0.1"/>
+  </node>
+</launch>

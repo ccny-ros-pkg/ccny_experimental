@@ -14,7 +14,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 
-#include "KF/complementary_filter.h"
+#include "imu_complementary_filter/complementary_filter.h"
 
 namespace imu_tools {
 

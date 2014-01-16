@@ -1,10 +1,10 @@
 <package>
-  <description brief="KF">
+  <description brief="imu_complementary_filter">
 
-     KF
+     Complementary filter for IMU orientarion
 
   </description>
-  <author>rvalenti</author>
+  <author>Roberto Valenti, Ivan Dryanovski</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/KF</url>
