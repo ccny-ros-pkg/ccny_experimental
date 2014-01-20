@@ -107,12 +107,12 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
   double ax = lin_acc.x;
   double ay = lin_acc.y;
   double az = lin_acc.z;
-  double mx = mag_fld.x;
-  double my = mag_fld.y;
-  double mz = mag_fld.z;
   double wx = ang_vel.x;
   double wy = ang_vel.y;
   double wz = ang_vel.z;
+  double mx = mag_fld.x;
+  double my = mag_fld.y;
+  double mz = mag_fld.z;
 
   if (!initialized_filter_)
   {   
@@ -132,7 +132,7 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
   if (isnan(mx) || isnan(my) || isnan(mz))
     filter_.update(ax, ay, az, wx, wy, wz, dt);
   else 
-    filter_.update(ax, ay, az, mx, my, mz, wx, wy, wz, dt);
+    filter_.update(ax, ay, az, wx, wy, wz, mx, my, mz, dt);
 
   // Publish state.     
   publish(imu_msg_raw);

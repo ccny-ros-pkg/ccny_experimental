@@ -61,7 +61,6 @@ void ComplementaryFilter::update(double ax, double ay, double az,
   // Fuse prediction and correction.
   filter(q0_pred, q1_pred, q2_pred, q3_pred,
          q0_meas, q1_meas, q2_meas, q3_meas);
-
 }
 
 void ComplementaryFilter::update(double ax, double ay, double az, 
