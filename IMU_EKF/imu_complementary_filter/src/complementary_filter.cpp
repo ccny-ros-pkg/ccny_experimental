@@ -170,6 +170,7 @@ void ComplementaryFilter::filter(
     q1_ = q1_meas;
     q2_ = q2_meas;
     q3_ = q3_meas;
+    initialized_ = true;
   }
   else
   {

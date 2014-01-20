@@ -77,8 +77,6 @@ void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
 
   if (!initialized_filter_)
   {   
-    // Initialize to unit quaternion.
-    filter_.initialize(1, 0, 0, 0);
     time_prev_ = time;
     initialized_filter_ = true;
     return; 
@@ -118,8 +116,6 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
 
   if (!initialized_filter_)
   {   
-    // Initialize to unit quaternion.
-    filter_.initialize(1, 0, 0, 0);
     time_prev_ = time;
     initialized_filter_ = true;
     return; 
