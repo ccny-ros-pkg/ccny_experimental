@@ -12,9 +12,13 @@ class ComplementaryFilter
     bool setGain(double gain);
     double getGain() const;
 
-    // Initialize using a quaternion representing the orientation of the fixed
-    // frame wrt the global frame.
-    void initialize(double q0, double q1, double q2, double q3);
+    // Set the orientation, as a Hamilton Quaternion, of the body frame wrt the
+    // fixed frame.
+    void setOrientation(double q0, double q1, double q2, double q3);
+
+    // Get the orientation, as a Hamilton Quaternion, of the body frame wrt the
+    // fixed frame.
+    void getOrientation(double& q0, double& q1, double& q2, double& q3) const;
 
     // Update from accelerometer and gyroscope data.
     // [ax, ay, az]: Normalized gravity vector.
@@ -33,10 +37,6 @@ class ComplementaryFilter
                 double wx, double wy, double wz,
                 double mx, double my, double mz,
                 double dt);
-
-    // Get the orientation, as a Hamilton Quaternion, of the body frame wrt the
-    // fixed frame.
-    void getOrientation(double& q0, double& q1, double& q2, double& q3) const;
 
   private:
 

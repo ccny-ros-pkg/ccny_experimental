@@ -27,7 +27,8 @@ double ComplementaryFilter::getGain() const
   return gain_;
 }
 
-void ComplementaryFilter::initialize(double q0, double q1, double q2, double q3) 
+void ComplementaryFilter::setOrientation(
+    double q0, double q1, double q2, double q3) 
 {
   // Set the state to inverse (state is fixed wrt body).
   invertQuaternion(q0, q1, q2, q3, q0_, q1_, q2_, q3_);
