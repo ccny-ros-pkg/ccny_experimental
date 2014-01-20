@@ -95,9 +95,6 @@ void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
   // Calculate dt.
   double dt = (time - time_prev_).toSec();
   time_prev_ = time;
- 
-  // Normalize acceleration vector.
-  normalizeVector(ax, ay, az);
 
   // Update the filter.    
   filter_.update(ax, ay, az, wx, wy, wz, dt);
@@ -135,9 +132,6 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
   double dt = (time - time_prev_).toSec();
   time_prev_ = time;
 
-  // Normalize acceleration vector.
-  normalizeVector(ax, ay, az);
-
   // Update the filter.    
   if (isnan(mx) || isnan(my) || isnan(mz))
     filter_.update(ax, ay, az, wx, wy, wz, dt);
@@ -146,17 +140,6 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
 
   // Publish state.     
   publish(imu_msg_raw);
-}
-
-
-void ComplementaryFilterROS::normalizeVector(double& x, double& y, double& z)
-{
-  double norm = sqrt(x*x + y*y + z*z);
-  if (norm == 0.0)
-    ROS_ERROR("VECTOR NORM ZERO") ; 
-  x /= norm;
-  y /= norm;
-  z /= norm;
 }
 
 tf::Quaternion ComplementaryFilterROS::hamiltonToTFQuaternion(

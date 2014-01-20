@@ -89,7 +89,9 @@ class ComplementaryFilter
     void filter(double q0_pred, double q1_pred, double q2_pred, double q3_pred,
                 double q0_meas, double q1_meas, double q2_meas, double q3_meas);
 
+    void normalizeVector(double& x, double& y, double& z) const;
     void normalizeQuaternion(double& q0, double& q1, double& q2, double& q3) const;
+
 
     void invertQuaternion(
         double q0, double q1, double q2, double q3,

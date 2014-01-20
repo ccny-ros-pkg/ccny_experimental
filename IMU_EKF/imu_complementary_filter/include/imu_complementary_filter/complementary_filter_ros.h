@@ -68,7 +68,6 @@ class ComplementaryFilterROS
                         const MagMsg::ConstPtr& mav_msg);
     void publish(const sensor_msgs::Imu::ConstPtr& imu_msg_raw);
 
-    void normalizeVector(double& x, double& y, double& z);
     tf::Quaternion hamiltonToTFQuaternion(
         double q0, double q1, double q2, double q3) const;
 };

@@ -175,6 +175,9 @@ void ComplementaryFilter::getMeasurement(
   // (intermediary frame). q3_acc is defined as 0.
   double q0_acc, q1_acc, q2_acc;
     
+  // Normalize acceleration vector.
+  normalizeVector(ax, ay, az);
+
   if (az == -1)
   {
     q0_acc =  0;
@@ -261,6 +264,15 @@ void ComplementaryFilter::getOrientation(
 {
   // Return the inverse of the state (state is fixed wrt body).
   invertQuaternion(q0_, q1_, q2_, q3_, q0, q1, q2, q3);
+}
+
+void ComplementaryFilter::normalizeVector(double& x, double& y, double& z) const
+{
+  double norm = sqrt(x*x + y*y + z*z);
+
+  x /= norm;
+  y /= norm;
+  z /= norm;
 }
 
 void ComplementaryFilter::normalizeQuaternion(
