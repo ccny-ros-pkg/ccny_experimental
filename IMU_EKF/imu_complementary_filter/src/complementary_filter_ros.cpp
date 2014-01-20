@@ -50,6 +50,8 @@ ComplementaryFilterROS::~ComplementaryFilterROS()
 void ComplementaryFilterROS::initializeParams()
 {
   double gain;
+  bool do_bias_estimation;
+  double bias_alpha;
 
   if (!nh_private_.getParam ("fixed_frame", fixed_frame_))
     fixed_frame_ = "odom";
@@ -57,9 +59,15 @@ void ComplementaryFilterROS::initializeParams()
     use_mag_ = false;
   if (!nh_private_.getParam ("gain", gain))
     gain = 0.1;
+  if (!nh_private_.getParam ("do_bias_estimation", do_bias_estimation))
+    do_bias_estimation = true;
+  if (!nh_private_.getParam ("bias_alpha", bias_alpha))
+    bias_alpha = 0.1;
 
   if(!filter_.setGain(gain))
     ROS_WARN("Invalid gain passed to ComplementaryFilter.");
+  if(!filter_.setBiasAlpha(bias_alpha))
+    ROS_WARN("Invalid bias_alpha passed to ComplementaryFilter.");
 }
 
 void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)

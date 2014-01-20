@@ -6,10 +6,24 @@ namespace imu_tools {
 
 ComplementaryFilter::ComplementaryFilter() :
     gain_(0.1),
+    bias_alpha_(0.01),
+    do_bias_estimation_(true),
     initialized_(false),
-    q0_(1), q1_(0), q2_(0), q3_(0) { }
+    q0_(1), q1_(0), q2_(0), q3_(0),
+    wx_prev_(0), wy_prev_(0), wz_prev_(0),
+    wx_bias_(0), wy_bias_(0), wz_bias_(0) { }
 
 ComplementaryFilter::~ComplementaryFilter() { }
+
+void ComplementaryFilter::setDoBiasEstimation(bool do_bias_estimation)
+{
+  do_bias_estimation_ = do_bias_estimation;
+}
+
+bool ComplementaryFilter::getDoBiasEstimation() const
+{
+  return do_bias_estimation_;
+}
 
 bool ComplementaryFilter::setGain(double gain)
 {
@@ -27,6 +41,22 @@ double ComplementaryFilter::getGain() const
   return gain_;
 }
 
+bool ComplementaryFilter::setBiasAlpha(double bias_alpha)
+{
+  if (bias_alpha >= 0 && bias_alpha <= 1.0)
+  {
+    bias_alpha_ = bias_alpha;
+    return true;
+  }
+  else
+    return false;
+}
+
+double ComplementaryFilter::getBiasAlpha() const 
+{
+  return bias_alpha_;
+}
+
 void ComplementaryFilter::setOrientation(
     double q0, double q1, double q2, double q3) 
 {
@@ -38,6 +68,10 @@ void ComplementaryFilter::update(double ax, double ay, double az,
                                  double wx, double wy, double wz,
                                  double dt)
 {
+  // Bias estimation
+  if (do_bias_estimation_)
+    updateBiases(ax, ay, az, wx, wy, wz);
+
   // Prediction.
   double q0_pred, q1_pred, q2_pred, q3_pred;
   getPrediction(wx, wy, wz, dt,
@@ -68,6 +102,10 @@ void ComplementaryFilter::update(double ax, double ay, double az,
                                  double mx, double my, double mz,
                                  double dt)
 {
+  // Bias estimation
+  if (do_bias_estimation_)
+    updateBiases(ax, ay, az, wx, wy, wz);
+
   // Prediction.
   double q0_pred, q1_pred, q2_pred, q3_pred;
   getPrediction(wx, wy, wz, dt,
@@ -88,14 +126,43 @@ void ComplementaryFilter::update(double ax, double ay, double az,
          q0_meas, q1_meas, q2_meas, q3_meas);
 }
 
+void ComplementaryFilter::updateBiases(double ax, double ay, double az, 
+                                       double wx, double wy, double wz)
+{
+  double acc_magnitude = sqrt(ax*ax + ay*ay + az*az);
+
+  if (fabs(wx - wx_prev_) < kDeltaAngularVelocityThreshold &&
+      fabs(wx - wx_bias_) < kAngularVelocityThreshold &&
+      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+    wx_bias_ += bias_alpha_ * (wx - wx_bias_);
+
+  if (fabs(wy - wy_prev_) < kDeltaAngularVelocityThreshold &&
+      fabs(wy - wy_bias_) < kAngularVelocityThreshold &&
+      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+    wy_bias_ += bias_alpha_ * (wy - wy_bias_);
+
+  if (fabs(wz - wz_prev_) < kDeltaAngularVelocityThreshold &&
+      fabs(wz - wz_bias_) < kAngularVelocityThreshold &&
+      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+    wz_bias_ += bias_alpha_ * (wz - wz_bias_);
+
+  wx_prev_ = wx; 
+  wy_prev_ = wy; 
+  wz_prev_ = wz;
+}
+
 void ComplementaryFilter::getPrediction(
     double wx, double wy, double wz, double dt, 
     double& q0_pred, double& q1_pred, double& q2_pred, double& q3_pred) const
 {
-  q0_pred = q0_ + 0.5*dt*( wx*q1_ + wy*q2_ + wz*q3_);
-  q1_pred = q1_ + 0.5*dt*(-wx*q0_ - wy*q3_ + wz*q2_);
-  q2_pred = q2_ + 0.5*dt*( wx*q3_ - wy*q0_ - wz*q1_);
-  q3_pred = q3_ + 0.5*dt*(-wx*q2_ + wy*q1_ - wz*q0_);
+  double wx_unb = wx - wx_bias_;
+  double wy_unb = wy - wy_bias_;
+  double wz_unb = wz - wz_bias_;
+
+  q0_pred = q0_ + 0.5*dt*( wx_unb*q1_ + wy_unb*q2_ + wz_unb*q3_);
+  q1_pred = q1_ + 0.5*dt*(-wx_unb*q0_ - wy_unb*q3_ + wz_unb*q2_);
+  q2_pred = q2_ + 0.5*dt*( wx_unb*q3_ - wy_unb*q0_ - wz_unb*q1_);
+  q3_pred = q3_ + 0.5*dt*(-wx_unb*q2_ + wy_unb*q1_ - wz_unb*q0_);
 }
 
 void ComplementaryFilter::getMeasurement(

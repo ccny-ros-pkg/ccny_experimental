@@ -12,6 +12,12 @@ class ComplementaryFilter
     bool setGain(double gain);
     double getGain() const;
 
+    bool setBiasAlpha(double bias_alpha);
+    double getBiasAlpha() const;
+
+    void setDoBiasEstimation(bool do_bias_estimation);
+    bool getDoBiasEstimation() const;
+
     // Set the orientation, as a Hamilton Quaternion, of the body frame wrt the
     // fixed frame.
     void setOrientation(double q0, double q1, double q2, double q3);
@@ -40,14 +46,32 @@ class ComplementaryFilter
 
   private:
 
+    static const double kGravity= 9.81;
+    static const double kAngularVelocityThreshold = 0.2;
+    static const double kAccelerationThreshold = 0.1;
+    static const double kDeltaAngularVelocityThreshold = 0.01;
+
     // Gain parameter for the complementary filter, belongs in [0, 1].
     double gain_;
+
+    double bias_alpha_;
+
+    bool do_bias_estimation_;
   
     bool initialized_;
 
     // The orientation as a Hamilton quaternion (q0 is the scalar). Represents
     // the orientation of the fixed frame wrt the body frame.
     double q0_, q1_, q2_, q3_;  
+
+    // Bias in angular velocities;
+    double wx_prev_, wy_prev_, wz_prev_;
+
+    // Bias in angular velocities;
+    double wx_bias_, wy_bias_, wz_bias_;
+
+    void updateBiases(double ax, double ay, double az, 
+                      double wx, double wy, double wz);
 
     void getPrediction(
         double wx, double wy, double wz, double dt, 
