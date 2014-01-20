@@ -149,7 +149,11 @@ void ComplementaryFilter::makeContinuous(
     double p0, double p1, double p2, double p3,
     double& q0, double& q1, double& q2, double& q3) const
 {
+  // Calculate the scalar component (q0) of (p * q_inv)
   double delta = p0*q0 + p1*q1 + p2*q2 + p3*q3;
+
+  // If the scalar of the delta quaternion is less than zero, use the
+  // alternative formulation for q.
   if (delta < 0)
   {
     q0 *= -1;
