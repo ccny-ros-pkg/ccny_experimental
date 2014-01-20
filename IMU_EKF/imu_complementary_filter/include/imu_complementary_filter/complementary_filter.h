@@ -54,6 +54,7 @@ class ComplementaryFilter
     // Gain parameter for the complementary filter, belongs in [0, 1].
     double gain_;
 
+    // Bias estimation parameter, belongs in [0, 1].
     double bias_alpha_;
 
     bool do_bias_estimation_;

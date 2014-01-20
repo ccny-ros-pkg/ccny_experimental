@@ -62,7 +62,9 @@ void ComplementaryFilterROS::initializeParams()
   if (!nh_private_.getParam ("do_bias_estimation", do_bias_estimation))
     do_bias_estimation = true;
   if (!nh_private_.getParam ("bias_alpha", bias_alpha))
-    bias_alpha = 0.1;
+    bias_alpha = 0.01;
+
+  filter_.setDoBiasEstimation(do_bias_estimation);
 
   if(!filter_.setGain(gain))
     ROS_WARN("Invalid gain passed to ComplementaryFilter.");
