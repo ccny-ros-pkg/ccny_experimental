@@ -42,6 +42,8 @@ class ComplementaryFilter
 
     // Gain parameter for the complementary filter, belongs in [0, 1].
     double gain_;
+  
+    bool initialized_;
 
     // The orientation as a Hamilton quaternion (q0 is the scalar). Represents
     // the orientation of the fixed frame wrt the body frame.

@@ -5,10 +5,9 @@
 namespace imu_tools {
 
 ComplementaryFilter::ComplementaryFilter() :
-    gain_(0.1)
-{
-
-}
+    gain_(0.1),
+    initialized_(false),
+    q0_(1), q1_(0), q2_(0), q3_(0) { }
 
 ComplementaryFilter::~ComplementaryFilter() { }
 
@@ -164,11 +163,22 @@ void ComplementaryFilter::filter(
     double q0_pred, double q1_pred, double q2_pred, double q3_pred,
     double q0_meas, double q1_meas, double q2_meas, double q3_meas)
 {
-  // Complementary filter.
-  q0_ = (1.0 - gain_) * q0_pred + gain_ * q0_meas;
-  q1_ = (1.0 - gain_) * q1_pred + gain_ * q1_meas;
-  q2_ = (1.0 - gain_) * q2_pred + gain_ * q2_meas;
-  q3_ = (1.0 - gain_) * q3_pred + gain_ * q3_meas;
+  if (!initialized_) 
+  {
+    // First time - ignore prediction
+    q0_ = q0_meas;
+    q1_ = q1_meas;
+    q2_ = q2_meas;
+    q3_ = q3_meas;
+  }
+  else
+  {
+    // Complementary filter.
+    q0_ = (1.0 - gain_) * q0_pred + gain_ * q0_meas;
+    q1_ = (1.0 - gain_) * q1_pred + gain_ * q1_meas;
+    q2_ = (1.0 - gain_) * q2_pred + gain_ * q2_meas;
+    q3_ = (1.0 - gain_) * q3_pred + gain_ * q3_meas;
+  }
 
   // Re-normalize state.
   normalizeQuaternion(q0_, q1_, q2_, q3_);
