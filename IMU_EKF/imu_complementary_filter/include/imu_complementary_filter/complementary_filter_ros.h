@@ -1,16 +1,12 @@
 #ifndef IMU_TOOLS_COMPLEMENTARY_FILTER_ROS_H
 #define IMU_TOOLS_COMPLEMENTARY_FILTER_ROS_H
 
-#include <ros/ros.h>
-#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3Stamped.h>
-#include <message_filters/subscriber.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
 #include <message_filters/synchronizer.h>
-#include <message_filters/time_synchronizer.h>
+#include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
-#include <std_msgs/Header.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 

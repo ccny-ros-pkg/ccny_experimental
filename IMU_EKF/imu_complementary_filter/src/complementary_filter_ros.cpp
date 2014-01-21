@@ -12,7 +12,7 @@ ComplementaryFilterROS::ComplementaryFilterROS(
   nh_private_(nh_private),
   initialized_filter_(false)
 {
-  ROS_INFO("Starting KF");
+  ROS_INFO("Starting ComplementaryFilterROS");
   initializeParams();
   
   int queue_size = 5;
