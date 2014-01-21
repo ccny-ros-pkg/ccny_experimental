@@ -15,8 +15,14 @@ class ComplementaryFilter
     bool setBiasAlpha(double bias_alpha);
     double getBiasAlpha() const;
 
+    bool getSteadyState() const;
+
     void setDoBiasEstimation(bool do_bias_estimation);
     bool getDoBiasEstimation() const;
+
+    double getAngularVelocityBiasX() const;
+    double getAngularVelocityBiasY() const;
+    double getAngularVelocityBiasZ() const;
 
     // Set the orientation, as a Hamilton Quaternion, of the body frame wrt the
     // fixed frame.
@@ -61,6 +67,8 @@ class ComplementaryFilter
   
     bool initialized_;
 
+    bool steady_state_;
+
     // The orientation as a Hamilton quaternion (q0 is the scalar). Represents
     // the orientation of the fixed frame wrt the body frame.
     double q0_, q1_, q2_, q3_;  
@@ -73,6 +81,9 @@ class ComplementaryFilter
 
     void updateBiases(double ax, double ay, double az, 
                       double wx, double wy, double wz);
+
+    bool checkState(double ax, double ay, double az, 
+                    double wx, double wy, double wz) const;
 
     void getPrediction(
         double wx, double wy, double wz, double dt, 

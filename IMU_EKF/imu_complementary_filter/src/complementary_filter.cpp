@@ -9,6 +9,7 @@ ComplementaryFilter::ComplementaryFilter() :
     bias_alpha_(0.01),
     do_bias_estimation_(true),
     initialized_(false),
+    steady_state_(false),
     q0_(1), q1_(0), q2_(0), q3_(0),
     wx_prev_(0), wy_prev_(0), wz_prev_(0),
     wx_bias_(0), wy_bias_(0), wz_bias_(0) { }
@@ -41,6 +42,11 @@ double ComplementaryFilter::getGain() const
   return gain_;
 }
 
+bool ComplementaryFilter::getSteadyState() const 
+{
+  return steady_state_;
+}
+
 bool ComplementaryFilter::setBiasAlpha(double bias_alpha)
 {
   if (bias_alpha >= 0 && bias_alpha <= 1.0)
@@ -62,6 +68,22 @@ void ComplementaryFilter::setOrientation(
 {
   // Set the state to inverse (state is fixed wrt body).
   invertQuaternion(q0, q1, q2, q3, q0_, q1_, q2_, q3_);
+}
+
+
+double ComplementaryFilter::getAngularVelocityBiasX() const
+{
+  return wx_bias_;
+}
+
+double ComplementaryFilter::getAngularVelocityBiasY() const
+{
+  return wy_bias_;
+}
+
+double ComplementaryFilter::getAngularVelocityBiasZ() const
+{
+  return wz_bias_;
 }
 
 void ComplementaryFilter::update(double ax, double ay, double az, 
@@ -126,25 +148,40 @@ void ComplementaryFilter::update(double ax, double ay, double az,
          q0_meas, q1_meas, q2_meas, q3_meas);
 }
 
-void ComplementaryFilter::updateBiases(double ax, double ay, double az, 
-                                       double wx, double wy, double wz)
+bool ComplementaryFilter::checkState(double ax, double ay, double az, 
+                                     double wx, double wy, double wz) const
 {
   double acc_magnitude = sqrt(ax*ax + ay*ay + az*az);
 
   if (fabs(wx - wx_prev_) < kDeltaAngularVelocityThreshold &&
       fabs(wx - wx_bias_) < kAngularVelocityThreshold &&
       fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
-    wx_bias_ += bias_alpha_ * (wx - wx_bias_);
+   return false;
 
   if (fabs(wy - wy_prev_) < kDeltaAngularVelocityThreshold &&
       fabs(wy - wy_bias_) < kAngularVelocityThreshold &&
       fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
-    wy_bias_ += bias_alpha_ * (wy - wy_bias_);
+    return false;
 
   if (fabs(wz - wz_prev_) < kDeltaAngularVelocityThreshold &&
       fabs(wz - wz_bias_) < kAngularVelocityThreshold &&
       fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+    return false;
+
+  return true;
+}
+
+void ComplementaryFilter::updateBiases(double ax, double ay, double az, 
+                                       double wx, double wy, double wz)
+{
+  steady_state_ = checkState(ax, ay, az, wx, wy, wz);
+
+  if (steady_state_)
+  {
+    wx_bias_ += bias_alpha_ * (wx - wx_bias_);
+    wy_bias_ += bias_alpha_ * (wy - wy_bias_);
     wz_bias_ += bias_alpha_ * (wz - wz_bias_);
+  }
 
   wx_prev_ = wx; 
   wy_prev_ = wy; 

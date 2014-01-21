@@ -50,6 +50,7 @@ class ComplementaryFilterROS
     ros::Publisher roll_publisher_;
     ros::Publisher pitch_publisher_;
     ros::Publisher yaw_publisher_;
+    ros::Publisher state_publisher_;
     tf::TransformBroadcaster tf_broadcaster_;
          
     // Parameters:

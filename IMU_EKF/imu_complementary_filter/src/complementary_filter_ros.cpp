@@ -1,6 +1,7 @@
 #include "imu_complementary_filter/complementary_filter_ros.h"
 
 #include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
 
 namespace imu_tools {
 
@@ -39,7 +40,13 @@ ComplementaryFilterROS::ComplementaryFilterROS(
   {
     imu_subscriber_->registerCallback(
         &ComplementaryFilterROS::imuCallback, this);
-  } 
+  }
+
+  if (filter_.getDoBiasEstimation())
+  {
+    state_publisher_ = nh_.advertise<std_msgs::Bool>("imu/steady_state", 
+        queue_size);
+  }
 }
 
 ComplementaryFilterROS::~ComplementaryFilterROS()
@@ -162,6 +169,15 @@ void ComplementaryFilterROS::publish(
   boost::shared_ptr<sensor_msgs::Imu> imu_msg = 
       boost::make_shared<sensor_msgs::Imu>(*imu_msg_raw);
   tf::quaternionTFToMsg(q, imu_msg->orientation);
+
+  // Account for biases.
+  if (filter_.getDoBiasEstimation())
+  {
+    imu_msg->angular_velocity.x -= filter_.getAngularVelocityBiasX();
+    imu_msg->angular_velocity.y -= filter_.getAngularVelocityBiasY();
+    imu_msg->angular_velocity.z -= filter_.getAngularVelocityBiasZ();
+  }
+
   imu_publisher_.publish(imu_msg);
 
   // Create and publish roll, pitch, yaw angles
@@ -180,6 +196,14 @@ void ComplementaryFilterROS::publish(
   roll_publisher_.publish(roll_msg);
   pitch_publisher_.publish(pitch_msg);
   yaw_publisher_.publish(yaw_msg);
+
+  // Publish whether we are in the steady state, when doing bias estimation
+  if (filter_.getDoBiasEstimation())
+  {
+    std_msgs::Bool state_msg;
+    state_msg.data = filter_.getSteadyState();
+    state_publisher_.publish(state_msg);
+  }
 
   // Create and publish the ROS tf.
   tf::Transform transform;
