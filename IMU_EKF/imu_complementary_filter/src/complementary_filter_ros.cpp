@@ -81,17 +81,11 @@ void ComplementaryFilterROS::initializeParams()
 
 void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
 {
-  const geometry_msgs::Vector3& lin_acc = imu_msg_raw->linear_acceleration; 
-  const geometry_msgs::Vector3& ang_vel = imu_msg_raw->angular_velocity;
+  const geometry_msgs::Vector3& a = imu_msg_raw->linear_acceleration; 
+  const geometry_msgs::Vector3& w = imu_msg_raw->angular_velocity;
   const ros::Time& time = imu_msg_raw->header.stamp;
-    
-  double ax = lin_acc.x;
-  double ay = lin_acc.y;
-  double az = lin_acc.z;
-  double wx = ang_vel.x;
-  double wy = ang_vel.y;
-  double wz = ang_vel.z;
 
+  // Initialize.
   if (!initialized_filter_)
   {   
     time_prev_ = time;
@@ -104,7 +98,7 @@ void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
   time_prev_ = time;
 
   // Update the filter.    
-  filter_.update(ax, ay, az, wx, wy, wz, dt);
+  filter_.update(a.x, a.y, a.z, w.x, w.y, w.z, dt);
 
   // Publish state.     
   publish(imu_msg_raw);
@@ -113,21 +107,12 @@ void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
 void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
                                             const MagMsg::ConstPtr& mag_msg)
 {
-  const geometry_msgs::Vector3& lin_acc = imu_msg_raw->linear_acceleration; 
-  const geometry_msgs::Vector3& mag_fld = mag_msg->vector;
-  const geometry_msgs::Vector3& ang_vel = imu_msg_raw->angular_velocity;
+  const geometry_msgs::Vector3& a = imu_msg_raw->linear_acceleration; 
+  const geometry_msgs::Vector3& w = imu_msg_raw->angular_velocity;
+  const geometry_msgs::Vector3& m = mag_msg->vector;
   const ros::Time& time = imu_msg_raw->header.stamp;
     
-  double ax = lin_acc.x;
-  double ay = lin_acc.y;
-  double az = lin_acc.z;
-  double wx = ang_vel.x;
-  double wy = ang_vel.y;
-  double wz = ang_vel.z;
-  double mx = mag_fld.x;
-  double my = mag_fld.y;
-  double mz = mag_fld.z;
-
+  // Initialize.
   if (!initialized_filter_)
   {   
     time_prev_ = time;
@@ -140,10 +125,10 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
   time_prev_ = time;
 
   // Update the filter.    
-  if (isnan(mx) || isnan(my) || isnan(mz))
-    filter_.update(ax, ay, az, wx, wy, wz, dt);
+  if (isnan(m.x) || isnan(m.y) || isnan(m.z))
+    filter_.update(a.x, a.y, a.z, w.x, w.y, w.z, dt);
   else 
-    filter_.update(ax, ay, az, wx, wy, wz, mx, my, mz, dt);
+    filter_.update(a.x, a.y, a.z, w.x, w.y, w.z, m.x, m.y, m.z, dt);
 
   // Publish state.     
   publish(imu_msg_raw);
@@ -165,7 +150,7 @@ void ComplementaryFilterROS::publish(
   filter_.getOrientation(q0, q1, q2, q3);
   tf::Quaternion q = hamiltonToTFQuaternion(q0, q1, q2, q3);
 
-  // Create and publish fitlered IMU message
+  // Create and publish fitlered IMU message.
   boost::shared_ptr<sensor_msgs::Imu> imu_msg = 
       boost::make_shared<sensor_msgs::Imu>(*imu_msg_raw);
   tf::quaternionTFToMsg(q, imu_msg->orientation);
@@ -207,8 +192,8 @@ void ComplementaryFilterROS::publish(
 
   // Create and publish the ROS tf.
   tf::Transform transform;
-  transform.setOrigin( tf::Vector3( 0.0, 0.0, 0.0 ) );
-  transform.setRotation( q );
+  transform.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
+  transform.setRotation(q);
   tf_broadcaster_.sendTransform(
       tf::StampedTransform(transform,
                            imu_msg_raw->header.stamp,
