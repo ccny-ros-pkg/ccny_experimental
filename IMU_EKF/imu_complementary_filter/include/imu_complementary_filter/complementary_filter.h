@@ -53,8 +53,9 @@ class ComplementaryFilter
                 double dt);
 
   private:
+    static const double kGravity = 9.81;
 
-    static const double kGravity= 9.81;
+    // Bias estimation steady state thresholds
     static const double kAngularVelocityThreshold = 0.2;
     static const double kAccelerationThreshold = 0.3;
     static const double kDeltaAngularVelocityThreshold = 0.02;
