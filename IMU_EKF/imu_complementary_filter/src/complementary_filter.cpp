@@ -111,8 +111,8 @@ void ComplementaryFilter::update(double ax, double ay, double az,
                  q0_meas, q1_meas, q2_meas, q3_meas);
 
   // Make measurement continuous wrt the prediction.
-  makeContinuous(q0_pred, q1_pred, q2_pred, q3_pred,
-                 q0_meas, q1_meas, q2_meas, q3_meas);
+  makeQuaternionContinuous(q0_pred, q1_pred, q2_pred, q3_pred,
+                           q0_meas, q1_meas, q2_meas, q3_meas);
 
   // Fuse prediction and correction.
   filter(q0_pred, q1_pred, q2_pred, q3_pred,
@@ -140,8 +140,8 @@ void ComplementaryFilter::update(double ax, double ay, double az,
                  q0_meas, q1_meas, q2_meas, q3_meas);
 
   // Make measurement continuous wrt the prediction.
-  makeContinuous(q0_pred, q1_pred, q2_pred, q3_pred,
-                 q0_meas, q1_meas, q2_meas, q3_meas);
+  makeQuaternionContinuous(q0_pred, q1_pred, q2_pred, q3_pred,
+                           q0_meas, q1_meas, q2_meas, q3_meas);
 
   // Fuse prediction and correction.
   filter(q0_pred, q1_pred, q2_pred, q3_pred,
@@ -249,24 +249,6 @@ void ComplementaryFilter::getMeasurement(
   q3_meas = q0_acc*q3_mag;
 }
 
-void ComplementaryFilter::makeContinuous(
-    double p0, double p1, double p2, double p3,
-    double& q0, double& q1, double& q2, double& q3) const
-{
-  // Calculate the scalar component (q0) of (p * q_inv)
-  double delta = p0*q0 + p1*q1 + p2*q2 + p3*q3;
-
-  // If the scalar of the delta quaternion is less than zero, use the
-  // alternative formulation for q.
-  if (delta < 0)
-  {
-    q0 *= -1;
-    q1 *= -1;
-    q2 *= -1;
-    q3 *= -1;
-  }  
-}
-
 void ComplementaryFilter::filter(
     double q0_pred, double q1_pred, double q2_pred, double q3_pred,
     double q0_meas, double q1_meas, double q2_meas, double q3_meas)
@@ -300,7 +282,7 @@ void ComplementaryFilter::getOrientation(
   invertQuaternion(q0_, q1_, q2_, q3_, q0, q1, q2, q3);
 }
 
-void ComplementaryFilter::normalizeVector(double& x, double& y, double& z) const
+void normalizeVector(double& x, double& y, double& z)
 {
   double norm = sqrt(x*x + y*y + z*z);
 
@@ -309,8 +291,7 @@ void ComplementaryFilter::normalizeVector(double& x, double& y, double& z) const
   z /= norm;
 }
 
-void ComplementaryFilter::normalizeQuaternion(
-    double& q0, double& q1, double& q2, double& q3) const
+void normalizeQuaternion(double& q0, double& q1, double& q2, double& q3)
 {
   double norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
   q0 /= norm;  
@@ -319,15 +300,33 @@ void ComplementaryFilter::normalizeQuaternion(
   q3 /= norm;
 }
 
-void ComplementaryFilter::invertQuaternion(
+void invertQuaternion(
     double q0, double q1, double q2, double q3,
-    double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv) const
+    double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv)
 {
   // Assumes quaternion is normalized.
   q0_inv = q0;
   q1_inv = -q1;
   q2_inv = -q2;
   q3_inv = -q3;
+}
+
+void makeQuaternionContinuous(
+    double p0, double p1, double p2, double p3,
+    double& q0, double& q1, double& q2, double& q3)
+{
+  // Calculate the scalar component (q0) of (p * q_inv)
+  double delta = p0*q0 + p1*q1 + p2*q2 + p3*q3;
+
+  // If the scalar of the delta quaternion is less than zero, use the
+  // alternative formulation for q.
+  if (delta < 0)
+  {
+    q0 *= -1;
+    q1 *= -1;
+    q2 *= -1;
+    q3 *= -1;
+  }  
 }
 
 }  // namespace imu_tools

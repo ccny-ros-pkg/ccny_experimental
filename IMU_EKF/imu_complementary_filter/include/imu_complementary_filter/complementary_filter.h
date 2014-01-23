@@ -15,6 +15,8 @@ class ComplementaryFilter
     bool setBiasAlpha(double bias_alpha);
     double getBiasAlpha() const;
 
+    // When the filter is in the steady state, bias estimation will occur (if the
+    // parameter is enabled).
     bool getSteadyState() const;
 
     void setDoBiasEstimation(bool do_bias_estimation);
@@ -60,13 +62,13 @@ class ComplementaryFilter
     // Gain parameter for the complementary filter, belongs in [0, 1].
     double gain_;
 
-    // Bias estimation parameter, belongs in [0, 1].
+    // Bias estimation gain parameter, belongs in [0, 1].
     double bias_alpha_;
 
+    // Parameter whether to do bias estimation or not.
     bool do_bias_estimation_;
-  
-    bool initialized_;
 
+    bool initialized_;
     bool steady_state_;
 
     // The orientation as a Hamilton quaternion (q0 is the scalar). Represents
@@ -94,20 +96,21 @@ class ComplementaryFilter
         double mx, double my, double mz,  
         double& q0_meas, double& q1_meas, double& q2_meas, double& q3_meas);
 
-    void makeContinuous(double p0, double p1, double p2, double p3,
-                        double& q0, double& q1, double& q2, double& q3) const;
-
     void filter(double q0_pred, double q1_pred, double q2_pred, double q3_pred,
                 double q0_meas, double q1_meas, double q2_meas, double q3_meas);
-
-    void normalizeVector(double& x, double& y, double& z) const;
-    void normalizeQuaternion(double& q0, double& q1, double& q2, double& q3) const;
-
-
-    void invertQuaternion(
-        double q0, double q1, double q2, double q3,
-        double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv) const;
 };
+
+void normalizeVector(double& x, double& y, double& z);
+void normalizeQuaternion(double& q0, double& q1, double& q2, double& q3);
+void invertQuaternion(
+    double q0, double q1, double q2, double q3,
+    double& q0_inv, double& q1_inv, double& q2_inv, double& q3_inv);
+
+// Given two quaternions p and q, this function will calculate the arc distance
+// between them. If the arc length is greater than 180, then q will be set to 
+// -q, so that the arc distance between them is the shorter one.
+void makeQuaternionContinuous(double p0, double p1, double p2, double p3,
+                              double& q0, double& q1, double& q2, double& q3);
 
 }  // namespace imu
 
