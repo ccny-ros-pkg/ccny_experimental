@@ -1,5 +1,5 @@
 #include "imu_complementary_filter/complementary_filter.h"
-
+#include <cstdio>
 #include <cmath>
 
 namespace imu_tools {
@@ -152,6 +152,7 @@ bool ComplementaryFilter::checkState(double ax, double ay, double az,
                                      double wx, double wy, double wz) const
 {
   double acc_magnitude = sqrt(ax*ax + ay*ay + az*az);
+  printf("%f\n", acc_magnitude - kGravity); 
   if (fabs(acc_magnitude - kGravity) > kAccelerationThreshold)
     return false;
 
@@ -159,6 +160,7 @@ bool ComplementaryFilter::checkState(double ax, double ay, double az,
       fabs(wy - wy_prev_) > kDeltaAngularVelocityThreshold ||
       fabs(wz - wz_prev_) > kDeltaAngularVelocityThreshold)
     return false;
+
 
   if (fabs(wx - wx_bias_) > kAngularVelocityThreshold ||
       fabs(wy - wy_bias_) > kAngularVelocityThreshold ||
