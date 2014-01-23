@@ -152,20 +152,17 @@ bool ComplementaryFilter::checkState(double ax, double ay, double az,
                                      double wx, double wy, double wz) const
 {
   double acc_magnitude = sqrt(ax*ax + ay*ay + az*az);
-
-  if (fabs(wx - wx_prev_) < kDeltaAngularVelocityThreshold &&
-      fabs(wx - wx_bias_) < kAngularVelocityThreshold &&
-      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
-   return false;
-
-  if (fabs(wy - wy_prev_) < kDeltaAngularVelocityThreshold &&
-      fabs(wy - wy_bias_) < kAngularVelocityThreshold &&
-      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+  if (fabs(acc_magnitude - kGravity) > kAccelerationThreshold)
     return false;
 
-  if (fabs(wz - wz_prev_) < kDeltaAngularVelocityThreshold &&
-      fabs(wz - wz_bias_) < kAngularVelocityThreshold &&
-      fabs(acc_magnitude - kGravity) < kAccelerationThreshold)
+  if (fabs(wx - wx_prev_) > kDeltaAngularVelocityThreshold ||
+      fabs(wy - wy_prev_) > kDeltaAngularVelocityThreshold ||
+      fabs(wz - wz_prev_) > kDeltaAngularVelocityThreshold)
+    return false;
+
+  if (fabs(wx - wx_bias_) > kAngularVelocityThreshold ||
+      fabs(wy - wy_bias_) > kAngularVelocityThreshold ||
+      fabs(wz - wz_bias_) > kAngularVelocityThreshold)
     return false;
 
   return true;
