@@ -1,5 +1,6 @@
 #include "imu_complementary_filter/complementary_filter.h"
 
+#include <cstdio>
 #include <cmath>
 
 namespace imu_tools {
@@ -264,11 +265,38 @@ void ComplementaryFilter::filter(
   }
   else
   {
+    /*
     // Complementary filter.
     q0_ = (1.0 - gain_) * q0_pred + gain_ * q0_meas;
     q1_ = (1.0 - gain_) * q1_pred + gain_ * q1_meas;
     q2_ = (1.0 - gain_) * q2_pred + gain_ * q2_meas;
     q3_ = (1.0 - gain_) * q3_pred + gain_ * q3_meas;
+    */
+
+    double dot = q0_pred*q0_meas + q1_pred*q1_meas + q2_pred*q2_meas + 
+        q3_pred*q3_meas;
+
+		if (dot < 0.95f)
+    {
+      // Slerp
+      printf("SLERP\n");
+      double angle = acos(dot);
+      double A = sin(angle*(1.0 - gain_));
+      double B = sin(angle * gain_);
+
+      q0_ = A * q0_pred + B * q0_meas;
+      q1_ = A * q1_pred + B * q1_meas;
+      q2_ = A * q2_pred + B * q2_meas;
+      q3_ = A * q3_pred + B * q3_meas;
+    }
+    else
+    {
+      // Lerp
+      q0_ = (1.0 - gain_) * q0_pred + gain_ * q0_meas;
+      q1_ = (1.0 - gain_) * q1_pred + gain_ * q1_meas;
+      q2_ = (1.0 - gain_) * q2_pred + gain_ * q2_meas;
+      q3_ = (1.0 - gain_) * q3_pred + gain_ * q3_meas;
+    }
   }
 
   // Re-normalize state.
