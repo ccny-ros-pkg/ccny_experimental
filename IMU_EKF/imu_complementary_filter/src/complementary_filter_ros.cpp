@@ -56,27 +56,42 @@ ComplementaryFilterROS::~ComplementaryFilterROS()
 
 void ComplementaryFilterROS::initializeParams()
 {
-  double gain;
+  double gain_acc;
+  double gain_mag;  
   bool do_bias_estimation;
   double bias_alpha;
+  bool do_adaptive_gain;
 
   if (!nh_private_.getParam ("fixed_frame", fixed_frame_))
     fixed_frame_ = "odom";
   if (!nh_private_.getParam ("use_mag", use_mag_))
     use_mag_ = false;
-  if (!nh_private_.getParam ("gain", gain))
-    gain = 0.1;
+  if (!nh_private_.getParam ("gain_acc", gain_acc))
+    gain_acc = 0.01;
+  if (!nh_private_.getParam ("gain_mag", gain_mag))
+    gain_mag = 0.01;
   if (!nh_private_.getParam ("do_bias_estimation", do_bias_estimation))
     do_bias_estimation = true;
   if (!nh_private_.getParam ("bias_alpha", bias_alpha))
     bias_alpha = 0.01;
+  if (!nh_private_.getParam ("do_adaptive_gain", do_adaptive_gain))
+    do_adaptive_gain = true;
 
   filter_.setDoBiasEstimation(do_bias_estimation);
+  filter_.setDoAdaptiveGain(do_adaptive_gain);
 
-  if(!filter_.setGain(gain))
-    ROS_WARN("Invalid gain passed to ComplementaryFilter.");
-  if(!filter_.setBiasAlpha(bias_alpha))
-    ROS_WARN("Invalid bias_alpha passed to ComplementaryFilter.");
+  if(!filter_.setGainAcc(gain_acc))
+    ROS_WARN("Invalid gain_acc passed to ComplementaryFilter.");
+  if (use_mag_)
+  {
+    if(!filter_.setGainMag(gain_mag))
+      ROS_WARN("Invalid gain_mag passed to ComplementaryFilter.");
+  }  
+  if (do_bias_estimation)
+  {
+    if(!filter_.setBiasAlpha(bias_alpha))
+      ROS_WARN("Invalid bias_alpha passed to ComplementaryFilter.");
+  }
 }
 
 void ComplementaryFilterROS::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
@@ -173,11 +188,9 @@ void ComplementaryFilterROS::publish(
   std_msgs::Float64 roll_msg;
   std_msgs::Float64 pitch_msg;
   std_msgs::Float64 yaw_msg;
-
   roll_msg.data = roll;
   pitch_msg.data = pitch;
   yaw_msg.data = yaw;
-  
   roll_publisher_.publish(roll_msg);
   pitch_publisher_.publish(pitch_msg);
   yaw_publisher_.publish(yaw_msg);
