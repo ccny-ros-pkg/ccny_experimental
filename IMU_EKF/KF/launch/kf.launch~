@@ -1,0 +1,70 @@
+<!-- Kalman Filter launch file -->
+<launch>
+#### launch xsens_driver ###############################################
+<!--
+	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
+		<param name="frame_id" value="/imu" />
+    <remap from="imu/data" to="imu/data_raw"/>
+    <remap from="/magnetic" to="imu/mag"/>
+	</node>
+--> 
+#### Lunch Phidgets_driver ###########################################################
+
+  <node pkg="nodelet" type="nodelet" name="PhidgetsImuNodelet" 
+    args="load phidgets_imu/PhidgetsImuNodelet imu_manager" 
+    output="screen">
+
+   # supported data rates: 4 8 16 24 32 40 ... 1000 (in ms)
+    <param name="period" value="4"/>
+    
+  </node>
+
+#### launch KF-Valenti ###############################################
+  
+	<node   pkg="KF"   type="kf_node" name="kf" output="screen" >
+  
+  
+  <param name="sigma_g"     value="0.004"/>  
+  
+  <param name="sigma_a"     value="0.015"/>
+  <param name="sigma_m"     value="0.001"/>
+  <remap from="roll_kf" to="roll_kf"/>
+  <remap from="pitch_kf" to="pitch_kf"/> 
+  <remap from="yaw_kf" to="yaw_kf"/>
+
+  </node>
+#### launch EKF-Sabatini ###############################################
+ 
+ 
+	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+  args="load IMU_EKF/EKF EKF"
+  <param name="use_mag" value="true"/>
+  <param name="sigma_g"     value="0.004"/>  
+  
+  <param name="sigma_a"     value="0.015"/>
+  <param name="sigma_m"     value="0.001"/>
+  <param name="sigma_bx"     value="0.002"/>
+  <param name="sigma_by"     value="0.002"/> 
+  <param name="sigma_bz"     value="0.002"/>
+  <remap from="roll_ekf" to="roll_ekf"/>
+  <remap from="pitch_ekf" to="pitch_ekf"/>
+  <remap from="yaw_ekf" to="yaw_ekf"/>
+  </node>
+
+#### IMU Madqwick Orientation Filter#######################################
+
+  <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
+    args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
+    output="screen">
+
+    <param name="use_mag" value="false"/>
+    <param name="gain" value="0.1"/>
+    <remap from="imu/data" to="imu/data_madgwick"/>
+  </node>
+--> 
+#### Nodelet manager ######################################################
+
+  <node pkg="nodelet" type="nodelet" name="imu_manager"
+    args="manager" output="screen" />
+
+</launch>

@@ -2,6 +2,9 @@
 
 #include <cstdio>
 #include <cmath>
+#include <time.h>
+#include <sys/time.h>
+#include <iostream>
 
 namespace imu_tools {
 
@@ -179,13 +182,15 @@ void ComplementaryFilter::update(double ax, double ay, double az,
     initialized_ = true;
     return;
   }
-  
+
   // Bias estimation.
   if (do_bias_estimation_)
     updateBiases(ax, ay, az, wx, wy, wz);
 
   // Prediction.
   double q0_pred, q1_pred, q2_pred, q3_pred;
+  struct timeval t1, t2;
+  gettimeofday(&t1, NULL);
   getPrediction(wx, wy, wz, dt,
                 q0_pred, q1_pred, q2_pred, q3_pred);   
      
@@ -205,7 +210,7 @@ void ComplementaryFilter::update(double ax, double ay, double az,
   quaternionMultiplication(q0_pred, q1_pred, q2_pred, q3_pred,
                            dq0_acc, dq1_acc, dq2_acc, dq3_acc,
                            q0_temp, q1_temp, q2_temp, q3_temp);
-
+  
   // Correction (from mag):
   // q_ = q_temp * [(1-gain) * qI + gain * dq_mag]
   // where qI = identity quaternion
@@ -221,6 +226,14 @@ void ComplementaryFilter::update(double ax, double ay, double az,
                            q0_, q1_, q2_, q3_);
 
   normalizeQuaternion(q0_, q1_, q2_, q3_);
+  gettimeofday(&t2, NULL);
+  suseconds_t time_el;
+  time_el = difftime(t2.tv_usec,t1.tv_usec);   
+  //printf("%.4f\n", (t2.tv_usec - t1.tv_usec));
+  std::cout << "t2 = "<< t2.tv_usec << std::endl;
+//  printf("t1 = %f\n", (t1.tv_sec));
+  printf("----------------------------------------\n");
+std::cout << "t1 = "<< t1.tv_usec << std::endl;
 }
 
 bool ComplementaryFilter::checkState(double ax, double ay, double az, 
@@ -319,11 +332,11 @@ void ComplementaryFilter::getMeasurement(
   // q_acc is the quaternion obtained from the acceleration vector representing 
   // the orientation of the Global frame wrt the Local frame with arbitrary yaw
   // (intermediary frame). q3_acc is defined as 0.
-  double q0_acc, q1_acc, q2_acc;
+  double q0_acc, q1_acc, q2_acc, q3_acc;
     
   // Normalize acceleration vector.
   normalizeVector(ax, ay, az);
-
+/*
   if (az == -1)
   {
     q0_acc =  0;
@@ -336,6 +349,22 @@ void ComplementaryFilter::getMeasurement(
     q1_acc = -ay/(2.0 * q0_acc);
     q2_acc =  ax/(2.0 * q0_acc);
   }
+  */
+  if (az >=0)
+    {
+      q0_acc =  sqrt((az + 1) * 0.5);	
+      q1_acc = -ay/(2.0 * q0_acc);
+      q2_acc =  ax/(2.0 * q0_acc);
+      q3_acc = 0;
+    }
+    else 
+    {
+      double X = sqrt((1 - az) * 0.5);
+      q0_acc = -ay/(2.0 * X);
+      q1_acc = X;
+      q2_acc = 0;
+      q3_acc = ax/(2.0 * X);
+    }  
   
   // [lx, ly, lz] is the magnetic field reading, rotated into the intermediary
   // frame by the inverse of q_acc.
@@ -354,11 +383,14 @@ void ComplementaryFilter::getMeasurement(
     
   // The quaternion multiplication between q_acc and q_mag represents the 
   // quaternion, orientation of the Global frame wrt the local frame.  
-  // q = q_acc times q_mag  
-  q0_meas = q0_acc*q0_mag;     
-  q1_meas = q1_acc*q0_mag + q2_acc*q3_mag;
-  q2_meas = q2_acc*q0_mag - q1_acc*q3_mag;
-  q3_meas = q0_acc*q3_mag;
+  // q = q_acc times q_mag 
+  quaternionMultiplication(q0_acc, q1_acc, q2_acc, q3_acc, 
+                           q0_mag, 0, 0, q3_mag,
+                           q0_meas, q1_meas, q2_meas, q3_meas ); 
+  //q0_meas = q0_acc*q0_mag;     
+  //q1_meas = q1_acc*q0_mag + q2_acc*q3_mag;
+  //q2_meas = q2_acc*q0_mag - q1_acc*q3_mag;
+  //q3_meas = q0_acc*q3_mag;
 }
 
 
@@ -456,7 +488,7 @@ double ComplementaryFilter::getAdaptiveGain(double alpha, double ax, double ay, 
     factor = m*error + b;
   else 
     factor = 0.0;
-  printf("FACTOR: %f \n", factor);
+  //printf("FACTOR: %f \n", factor);
   return factor*alpha;
 }
 
@@ -493,7 +525,7 @@ void scaleQuaternion(
   double gain,
   double& dq0, double& dq1, double& dq2, double& dq3)
 {
-	if (dq0 < 0.9)
+	if (dq0 < 0.0)//0.9
   {
     // Slerp (Spherical linear interpolation):
     double angle = acos(dq0);

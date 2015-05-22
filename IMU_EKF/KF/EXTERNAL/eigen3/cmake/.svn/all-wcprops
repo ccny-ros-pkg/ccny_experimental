@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/cmake
+END
+FindFFTW.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindFFTW.cmake
+END
+FindEigen2.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindEigen2.cmake
+END
+FindEigen3.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindEigen3.cmake
+END
+FindGoogleHash.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindGoogleHash.cmake
+END
+FindBLAS.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindBLAS.cmake
+END
+FindAdolc.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindAdolc.cmake
+END
+FindGMP.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindGMP.cmake
+END
+EigenTesting.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/EigenTesting.cmake
+END
+FindCholmod.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/cmake/FindCholmod.cmake
+END
+FindGSL.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindGSL.cmake
+END
+FindUmfpack.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/cmake/FindUmfpack.cmake
+END
+RegexUtils.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/RegexUtils.cmake
+END
+FindLAPACK.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindLAPACK.cmake
+END
+FindGLEW.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindGLEW.cmake
+END
+FindStandardMathLibrary.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindStandardMathLibrary.cmake
+END
+FindSuperLU.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/cmake/FindSuperLU.cmake
+END
+FindMPFR.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/cmake/FindMPFR.cmake
+END

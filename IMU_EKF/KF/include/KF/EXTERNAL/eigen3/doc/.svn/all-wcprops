@@ -1,0 +1,281 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc
+END
+C09_TutorialSparse.dox
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C09_TutorialSparse.dox
+END
+I02_HiPerformance.dox
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I02_HiPerformance.dox
+END
+C03_TutorialArrayClass.dox
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/C03_TutorialArrayClass.dox
+END
+Doxyfile.in
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/Doxyfile.in
+END
+I11_Aliasing.dox
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I11_Aliasing.dox
+END
+I15_StorageOrders.dox
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I15_StorageOrders.dox
+END
+eigendoxy_tabs.css
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/eigendoxy_tabs.css
+END
+I06_TopicEigenExpressionTemplates.dox
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I06_TopicEigenExpressionTemplates.dox
+END
+C02_TutorialMatrixArithmetic.dox
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C02_TutorialMatrixArithmetic.dox
+END
+C05_TutorialAdvancedInitialization.dox
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C05_TutorialAdvancedInitialization.dox
+END
+I08_Resizing.dox
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I08_Resizing.dox
+END
+I01_TopicLazyEvaluation.dox
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I01_TopicLazyEvaluation.dox
+END
+I13_FunctionsTakingEigenTypes.dox
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I13_FunctionsTakingEigenTypes.dox
+END
+D09_StructHavingEigenMembers.dox
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/D09_StructHavingEigenMembers.dox
+END
+unsupported_modules.dox
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/unsupported_modules.dox
+END
+I09_Vectorization.dox
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I09_Vectorization.dox
+END
+A05_PortingFrom2To3.dox
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/A05_PortingFrom2To3.dox
+END
+I14_PreprocessorDirectives.dox
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/doc/I14_PreprocessorDirectives.dox
+END
+D03_WrongStackAlignment.dox
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/D03_WrongStackAlignment.dox
+END
+eigendoxy_footer.html.in
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/eigendoxy_footer.html.in
+END
+I00_CustomizingEigen.dox
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/doc/I00_CustomizingEigen.dox
+END
+QuickReference.dox
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/QuickReference.dox
+END
+tutorial.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/tutorial.cpp
+END
+D11_UnalignedArrayAssert.dox
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/D11_UnalignedArrayAssert.dox
+END
+D01_StlContainers.dox
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/D01_StlContainers.dox
+END
+A10_Eigen2SupportModes.dox
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/data/svn/g2o/!svn/ver/5/trunk/EXTERNAL/eigen3/doc/A10_Eigen2SupportModes.dox
+END
+B01_Experimental.dox
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/B01_Experimental.dox
+END
+C07_TutorialReductionsVisitorsBroadcasting.dox
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C07_TutorialReductionsVisitorsBroadcasting.dox
+END
+I10_Assertions.dox
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I10_Assertions.dox
+END
+D07_PassingByValue.dox
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/D07_PassingByValue.dox
+END
+Overview.dox
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/Overview.dox
+END
+TopicLinearAlgebraDecompositions.dox
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/TopicLinearAlgebraDecompositions.dox
+END
+I07_TopicScalarTypes.dox
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I07_TopicScalarTypes.dox
+END
+C00_QuickStartGuide.dox
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C00_QuickStartGuide.dox
+END
+Eigen_Silly_Professor_64x64.png
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/Eigen_Silly_Professor_64x64.png
+END
+I03_InsideEigenExample.dox
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/I03_InsideEigenExample.dox
+END
+I12_ClassHierarchy.dox
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I12_ClassHierarchy.dox
+END
+C01_TutorialMatrixClass.dox
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C01_TutorialMatrixClass.dox
+END
+I05_FixedSizeVectorizable.dox
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/I05_FixedSizeVectorizable.dox
+END
+eigendoxy_header.html.in
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/eigendoxy_header.html.in
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/CMakeLists.txt
+END
+C06_TutorialLinearAlgebra.dox
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C06_TutorialLinearAlgebra.dox
+END
+C04_TutorialBlockOperations.dox
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/C04_TutorialBlockOperations.dox
+END
+eigendoxy.css
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/eigendoxy.css
+END
+C08_TutorialGeometry.dox
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/14/trunk/EXTERNAL/eigen3/doc/C08_TutorialGeometry.dox
+END
+AsciiQuickReference.txt
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/doc/AsciiQuickReference.txt
+END

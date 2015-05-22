@@ -1,3 +1,4 @@
+<!-- Launch Sabatini quaternion-based EKF -->
 <launch>
 
 #### Lunch Phidgets_driver ###########################################################
@@ -15,16 +16,17 @@
 
   
 	<node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
- 
-  <param name="sigma_g"     value="0.00003"/>  
   
-  <param name="sigma_a"     value="0.001"/>
+  <param name="use_mag" value="true"/>
+  <param name="sigma_g"     value="0.003"/>  
   
-  <param name="sigma_bx"     value="0.0020250"/>
-  <param name="sigma_by"     value="0.002510"/> 
-  <param name="sigma_bz"     value="0.002002510"/>
+  <param name="sigma_a"     value="0.015"/>
+  <param name="sigma_m"     value="0.001"/>
+  <param name="sigma_bx"     value="0.002"/>
+  <param name="sigma_by"     value="0.002"/> 
+  <param name="sigma_bz"     value="0.002"/>
   </node>
-
+<!-- Parameters 
 #### IMU Madqwick Orientation Filter#######################################
 
   <node pkg="nodelet" type="nodelet" name="ImuFilterNodelet"
@@ -35,7 +37,7 @@
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
   </node>
-
+-->
 #### Nodelet manager ######################################################
 
   <node pkg="nodelet" type="nodelet" name="imu_manager"

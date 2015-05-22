@@ -17,36 +17,50 @@
   </node>
 
   #### Complementary filter
-
+<!--
   <node pkg="imu_complementary_filter" type="complementary_filter_node"
       name="complementary_filter_node" output="screen">
-    <param name="do_bias_estimation" value="false"/>
+    <param name="do_bias_estimation" value="true"/>
     <param name="do_adaptive_gain" value="false"/>
-    <param name="use_mag" value="false"/>
+    <param name="use_mag" value="true"/>
     <param name="gain_acc" value="0.01"/>
     <param name="gain_mag" value="0.01"/>
   </node>
-
+-->
   <node pkg="imu_complementary_filter" type="complementary_filter_node"
       name="complementary_filter_gain_node" output="screen">
     <param name="do_bias_estimation" value="true"/>
     <param name="do_adaptive_gain" value="false"/>
-    <param name="use_mag" value="false"/>
+    <param name="use_mag" value="true"/>
     <param name="gain_acc" value="0.01"/>
-    <param name="gain_mag" value="0.01"/>
-  
+    <param name="gain_mag" value="0.001"/>
+ 
     <remap from="/imu/roll"  to="/imu/roll_gain"/>
-    <remap from="/imu/pitch" to="/imu/pitch_gain"/>
-    <remap from="/imu/yaw"   to="/imu/yaw_gain"/>
+    <remap from="/imu/pitch" to="/imu/pitch_gain2"/>
+    <remap from="/imu/yaw"   to="/imu/yaw_gain2"/>
   </node>
-
-  #### Madgwick filter
-
+  
+ #### Madgwick filter
+<!--
   <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_node"
     output="screen">
-    <param name="use_mag" value="false"/>
+    <param name="use_mag" value="true"/>
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
+    <remap from="/roll"  to="/roll_mad"/>
+    <remap from="/pitch"  to="/pitch_mad"/>
+    <remap from="/yaw"  to="/yaw_mad"/>
   </node>
+-->
+  #### Sabatini EKF
+<!--
+  <node   pkg="EKF"   type="ekf_node" name="ekf" output="screen" >
+  
+  <param name="use_mag"     value="true"/>
+  <param name="sigma_a"     value="0.001"/>
+  <param name="sigma_g"     value="0.0003"/>
+  <param name="sigma_m"     value="0.0001"/>
+  </node>
+-->
 
 </launch>

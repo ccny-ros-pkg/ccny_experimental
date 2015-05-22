@@ -138,13 +138,17 @@ void ComplementaryFilterROS::imuMagCallback(const ImuMsg::ConstPtr& imu_msg_raw,
   // Calculate dt.
   double dt = (time - time_prev_).toSec();
   time_prev_ = time;
-
+   //ros::Time t_in, t_out;        
+  //t_in = ros::Time::now();
   // Update the filter.    
   if (isnan(m.x) || isnan(m.y) || isnan(m.z))
     filter_.update(a.x, a.y, a.z, w.x, w.y, w.z, dt);
   else 
     filter_.update(a.x, a.y, a.z, w.x, w.y, w.z, m.x, m.y, m.z, dt);
 
+  //t_out = ros::Time::now(); 
+  //float dt_tot = (t_out - t_in).toSec() * 1000.0; // In msec.
+  //printf("%.6f\n", dt_tot);
   // Publish state.     
   publish(imu_msg_raw);
 }

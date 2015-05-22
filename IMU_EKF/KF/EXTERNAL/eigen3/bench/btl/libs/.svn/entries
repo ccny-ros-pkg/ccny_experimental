@@ -1,0 +1,67 @@
+10
+
+dir
+30
+https://svn.openslam.org/data/svn/g2o/trunk/EXTERNAL/eigen3/bench/btl/libs
+https://svn.openslam.org/data/svn/g2o
+
+
+
+2011-04-11T09:44:40.520267Z
+5
+kuemmerle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+f103317e-6d9d-0410-8741-9b77ce750e62
+
+ublas
+dir
+
+hand_vec
+dir
+
+eigen2
+dir
+
+eigen3
+dir
+
+tvmet
+dir
+
+gmm
+dir
+
+mtl4
+dir
+
+C
+dir
+
+STL
+dir
+
+C_BLAS
+dir
+
+f77
+dir
+
+STL_algo
+dir
+
+blitz
+dir
+

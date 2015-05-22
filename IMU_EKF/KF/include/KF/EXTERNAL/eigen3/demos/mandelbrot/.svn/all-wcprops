@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/demos/mandelbrot
+END
+mandelbrot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/demos/mandelbrot/mandelbrot.cpp
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/demos/mandelbrot/CMakeLists.txt
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/demos/mandelbrot/README
+END
+mandelbrot.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/data/svn/g2o/!svn/ver/3/trunk/EXTERNAL/eigen3/demos/mandelbrot/mandelbrot.h
+END
