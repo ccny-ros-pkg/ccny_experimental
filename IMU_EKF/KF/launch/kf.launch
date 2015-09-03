@@ -57,7 +57,7 @@
     args="load imu_filter_madgwick/ImuFilterNodelet imu_manager"
     output="screen">
 
-    <param name="use_mag" value="false"/>
+    <param name="use_mag" value="true"/>
     <param name="gain" value="0.1"/>
     <remap from="imu/data" to="imu/data_madgwick"/>
   </node>

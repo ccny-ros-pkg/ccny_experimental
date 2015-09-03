@@ -28,9 +28,9 @@
   
   <param name="sigma_a"     value="0.015"/>
   <param name="sigma_m"     value="0.001"/>
-  <remap from="roll_kf" to="roll_kf"/>
-  <remap from="pitch_kf" to="pitch_kf"/> 
-  <remap from="yaw_kf" to="yaw_kf"/>
+  <remap from="roll_kf" to="roll_kf4"/>
+  <remap from="pitch_kf" to="pitch_kf4"/> 
+  <remap from="yaw_kf" to="yaw_kf4"/>
 
   </node>
 #### launch EKF-Sabatini ###############################################
@@ -46,9 +46,9 @@
   <param name="sigma_bx"     value="0.002"/>
   <param name="sigma_by"     value="0.002"/> 
   <param name="sigma_bz"     value="0.002"/>
-  <remap from="roll_ekf" to="roll_ekf"/>
-  <remap from="pitch_ekf" to="pitch_ekf"/>
-  <remap from="yaw_ekf" to="yaw_ekf"/>
+  <remap from="roll_ekf" to="roll_ekf4"/>
+  <remap from="pitch_ekf" to="pitch_ekf4"/>
+  <remap from="yaw_ekf" to="yaw_ekf4"/>
   </node>
 
 #### IMU Madqwick Orientation Filter#######################################
